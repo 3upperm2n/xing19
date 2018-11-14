@@ -1,7 +1,5 @@
 #!/usr/bin/env python
 
-##!/home/users/leiming/anaconda2/bin/python
-
 import os,sys
 import operator, copy, random, time, ctypes
 import numpy as np
@@ -19,7 +17,7 @@ sys.path.append('../prepare')
 from app_info import * 
 
 # read common api
-sys.path.append('.')
+sys.path.append('../utils')
 from magic_common import * 
 
 lock = Lock()
@@ -152,7 +150,7 @@ def main():
         # exclude: rodinia-heartwall, lonestar_sssp, dmr
 
         if idx >= 0: # NOTE: modify if program hangs
-        #if idx >= 9: # NOTE: modify if program hangs
+        #if idx == 0: # NOTE: modify if program hangs
             app_run2_dd = {}
             for a2_idx, app2 in enumerate(appPool):
                 if a2_idx >=0:
@@ -192,10 +190,9 @@ def main():
 
                     # NOTE: only remember the app1 runtime  when running with app2
                     app_run2_dd[app2] = app1_best
-
                     #if a2_idx >=1: break
             # save 
-            np.save(ofile, app_run2_dd) # gtx 760
+            #np.save(ofile, app_run2_dd) # gtx 760
             #--- end of 2nd for loop ---# 
 
 
