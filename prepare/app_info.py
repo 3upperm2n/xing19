@@ -171,14 +171,16 @@ app2dir_dd['poly_syrk']        = '../apps/devid_poly/CUDA/SYRK'
 app.append('lonestar_bh')
 app2dir_dd['lonestar_bh']      = '../apps/devid_lonestar/apps/bh'
 
-app.append('lonestar_dmr')
-app2dir_dd['lonestar_dmr']     = '../apps/devid_lonestar/apps/dmr'
+# illegal mem  access
+#app.append('lonestar_dmr')
+#app2dir_dd['lonestar_dmr']     = '../apps/devid_lonestar/apps/dmr'
 
 app.append('lonestar_mst')
 app2dir_dd['lonestar_mst']     = '../apps/devid_lonestar/apps/mst'
 
-app.append('lonestar_sssp')
-app2dir_dd['lonestar_sssp']    = '../apps/devid_lonestar/apps/sssp'
+# illegal mem  access
+#app.append('lonestar_sssp')
+#app2dir_dd['lonestar_sssp']    = '../apps/devid_lonestar/apps/sssp'
 
 # parboil 
 app.append('parboil_bfs')
@@ -212,6 +214,7 @@ app2dir_dd['rodinia_dwt2d']      = '../apps/devid_rodinia/dwt2d'
 app.append('rodinia_gaussian')
 app2dir_dd['rodinia_gaussian']   = '../apps/devid_rodinia/gaussian'
 
+# illegal mem  access
 #app.append('rodinia_heartwall')
 #app2dir_dd['rodinia_heartwall']  = '../apps/devid_rodinia/heartwall'
 
