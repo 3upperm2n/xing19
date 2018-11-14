@@ -1,9 +1,6 @@
-#!/home/users/leiming/anaconda2/bin/python
+#!/usr/bin/env python
 
-# use different python env
-#####!/usr/bin/env python
-
-
+##!/home/users/leiming/anaconda2/bin/python
 
 import os,sys
 import operator, copy, random, time, ctypes
@@ -146,14 +143,13 @@ def main():
     # interference analysis : by run 2 apps concurrently
     #--------------------------------------------------------------------------
 
-
-    #appPool = app[:5]
     appPool = app
     
     for idx, app1 in enumerate(appPool):
         ofile = targetDir + '/' + app1 + ".npy"
         #print ofile
 
+        # exclude: rodinia-heartwall, lonestar_sssp, dmr
 
         if idx >= 0: # NOTE: modify if program hangs
         #if idx >= 9: # NOTE: modify if program hangs
