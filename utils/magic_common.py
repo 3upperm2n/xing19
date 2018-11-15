@@ -44,6 +44,28 @@ class cd:
         os.chdir(self.savedPath)
 
 #-----------------------------------------------------------------------------#
+# measure the elapsed time
+#-----------------------------------------------------------------------------#
+class Timer:
+    """
+    get the timer
+    """
+    def __init__(self):
+        self.startT = 0.
+        self.endT   = 0.
+        self.totRT = 0.
+
+    def start(self):
+        self.startT = time.time()
+
+    def end(self):
+        self.endT = time.time()
+
+    def total(self):
+        return self.endT - self.startT
+        
+
+#-----------------------------------------------------------------------------#
 # Run incoming workload
 #-----------------------------------------------------------------------------#
 def run_remote(app_dir, devid=0):
