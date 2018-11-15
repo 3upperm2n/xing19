@@ -17,14 +17,18 @@ def main():
     print("Total GPU applications = {}".format(len(app)))
 
     for fold in folders:
-        print fold
+        print("---------------------------------------------")
+        print("{}".format(fold))
+        print("---------------------------------------------")
+        dedicate_file = "../02_dedicate/" + fold[2:] + ".npy"
+        dedicate_dd = np.load(dedicate_file).item()
         for name in app:
             # step1: read dedicated runtime for the app
-            dedicate_rt = 1.
+            dedicate_rt = dedicate_dd[name] 
 
             # step2: read the perf for run2 cases
             fullpath = str(fold) + "/" + str(name) + ".npy"
-            print fullpath
+            #print fullpath
             
             app_run2_dd = np.load(fullpath).item()
 
@@ -37,9 +41,15 @@ def main():
 
             # step4: compute avg slowdown
             avg_slowdown = sum(slowdown_list) / len(slowdown_list)
-            print name, avg_slowdown
 
-            break
+            if avg_slowdown >=1:
+                print("[Warning] {0:<30} \t {1:.3f}".format(name, avg_slowdown))
+            else:
+                print("{0:<30} \t {1:.3f}".format(name, avg_slowdown))
+
+            #break
+
+        print("---------------------------------------------")
         break
         
 
