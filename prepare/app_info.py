@@ -175,8 +175,8 @@ app2dir_dd['lonestar_bh']      = '../apps/devid_lonestar/apps/bh'
 #app.append('lonestar_dmr')
 #app2dir_dd['lonestar_dmr']     = '../apps/devid_lonestar/apps/dmr'
 
-app.append('lonestar_mst')
-app2dir_dd['lonestar_mst']     = '../apps/devid_lonestar/apps/mst'
+#app.append('lonestar_mst')
+#app2dir_dd['lonestar_mst']     = '../apps/devid_lonestar/apps/mst'
 
 # illegal mem  access
 #app.append('lonestar_sssp')
