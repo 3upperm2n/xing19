@@ -9,8 +9,11 @@ from app_info import *  # app and app2dir_dd
 #from magic_common import cd
 
 
-folders = ['./homedesktop-gpu0', './homedesktop-gpu1', 
-        './hoyi-gpu0', './hoyi-gpu1']
+folders=['./homedesktop-gpu0',
+        './homedesktop-gpu1', 
+        './hoyi-gpu0',
+        './hoyi-gpu1',
+        './mcx1-gpu0']
 
 def main():
 
@@ -49,8 +52,8 @@ def main():
 
             #break
 
-        print("---------------------------------------------")
-        break
+        print("\n\n")
+        #break
         
 
 
