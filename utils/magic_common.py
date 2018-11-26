@@ -3,6 +3,7 @@
 import os,sys
 import random
 import time
+import re
 
 from subprocess import check_call, STDOUT, CalledProcessError
 DEVNULL = open(os.devnull, 'wb', 0)  # no std out
@@ -86,6 +87,131 @@ def run_remote(app_dir, devid=0):
     endT = time.time()
 
     return [startT, endT]
+
+#-----------------------------------------------------------------------------#
+# check whether a file contains a string 
+#-----------------------------------------------------------------------------#
+def check_str_in_file(f, mystr=""):
+    if not mystr:
+        print("Error in {}".format(__FILE__))
+        sys.exit(1)
+
+    if mystr in open(f).read():
+        # if my str in the file, check whether  => may need double check!
+        return True
+    else:
+        return False
+
+
+#-----------------------------------------------------------------------------#
+# save file 
+#-----------------------------------------------------------------------------#
+def save(filename, contents):  
+    fh = open(filename, 'w')  
+    fh.write(contents)  
+    fh.close()  
+
+#-----------------------------------------------------------------------------#
+# remove comments  
+#-----------------------------------------------------------------------------#
+def remove_comments(input_file):
+    data = None
+    with open(input_file, 'r') as myfile:
+        data = myfile.read()
+
+    if data <> None:
+        #save(input_file + ".bk", data) # save the org file as backups
+        #print len(data)
+
+        # remove all occurance streamed comments (/*COMMENT */) from string
+        data = re.sub(re.compile("/\*.*?\*/",re.DOTALL),"\n" ,data)
+        # remove all occurance singleline comments (//COMMENT\n ) from string
+        data = re.sub(re.compile("//.*?\n" ) ,"\n" ,data)
+        #print len(data)
+
+        save(input_file + ".new", data) # save the org file as backups
+         
+
+
+
+
+#-----------------------------------------------------------------------------#
+# Analyze program flow 
+#-----------------------------------------------------------------------------#
+def gen_program_flow(app_dir):
+    from os import walk
+    with cd(app_dir):
+        #
+        # step1: go the dir and list all the files 
+        #
+        print("checking the files under the folder :  {}".format(app_dir))
+
+        f = []
+        for (dirpath, dirnames, filenames) in walk("."):
+            #print("dirpath={}".format(dirpath))
+            #print("dirnames={}".format(dirnames))
+            #print("filenames={}".format(filenames))
+
+            if dirpath==".":
+                for localfile in filenames:
+                    f.append("./" + localfile)
+                #print f
+            else:
+                # sub folder
+                if filenames and (not dirnames):
+                    for fname in filenames:
+                        srcfile = str(dirpath) + "/" + str(fname)
+                        #print srcfile
+                        f.append(srcfile)
+            #print "\n"
+        #print f
+
+        #
+        # step2: find all the source files ending with .c/.cu/.cpp
+        #        (ignore headers)
+        #
+        myfiles= []
+        for targetfile in f:
+            #print targetfile,targetfile[-2:]
+            if targetfile[-2:] in [".c"] or targetfile[-3:] in [".cu"] or targetfile[-4:] in [".cpp"]:
+                myfiles.append(targetfile)
+
+        print myfiles 
+
+        #
+        # step3: find main function file
+        #
+        main_file = []
+        for eachfile in myfiles:
+            if check_str_in_file(eachfile, "main("):
+                print("found file with main() = {}".format(eachfile));
+                main_file = eachfile;
+                break;
+
+        print main_file
+
+        #
+        # step 4: remove the comments in the files
+        #           each modified file ending with .new
+        #
+        for eachfile in myfiles:
+            #print("remove comments for = {}".format(eachfile))
+            remove_comments(eachfile)
+
+
+        #
+        # step 5: 
+        #
+
+        # fopen:  cpu read input file
+        # malloc: cpu
+        # check whether there is a function
+
+
+
+        #
+        # step 6: 
+        #
 
 #-----------------------------------------------------------------------------#
 # GPU Job Table 
