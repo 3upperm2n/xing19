@@ -5,7 +5,8 @@ import random
 import time
 import re
 
-from subprocess import check_call, STDOUT, CalledProcessError
+import subprocess
+from subprocess import check_call, STDOUT, CalledProcessError,call
 DEVNULL = open(os.devnull, 'wb', 0)  # no std out
 
 
@@ -91,16 +92,27 @@ def run_remote(app_dir, devid=0):
 #-----------------------------------------------------------------------------#
 # check whether a file contains a string 
 #-----------------------------------------------------------------------------#
-def check_str_in_file(f, mystr=""):
-    if not mystr:
-        print("Error in {}".format(__FILE__))
-        sys.exit(1)
+def check_str_in_file(f, mystr="", useRE=True):
+    if useRE == False:
+        if not mystr:
+            print("Error in {}".format(__FILE__))
+            sys.exit(1)
 
-    if mystr in open(f).read():
-        # if my str in the file, check whether  => may need double check!
-        return True
-    else:
-        return False
+        if mystr in open(f).read():
+            # if my str in the file, check whether  => may need double check!
+            return True
+        else:
+            return False
+
+    else: # use regular expression
+        data = None
+        with open(f, 'r') as myfile:
+            data = myfile.read()
+        outlist = re.findall(r'main\s*\(',data)
+        if len(outlist) > 0:
+            return True
+        else:
+            return False
 
 
 #-----------------------------------------------------------------------------#
@@ -114,23 +126,179 @@ def save(filename, contents):
 #-----------------------------------------------------------------------------#
 # remove comments  
 #-----------------------------------------------------------------------------#
-def remove_comments(input_file):
+def remove_comments(input_file, ofile="", as_newline=True):
     data = None
     with open(input_file, 'r') as myfile:
         data = myfile.read()
 
     if data <> None:
-        #save(input_file + ".bk", data) # save the org file as backups
-        #print len(data)
+        if as_newline:
+            # remove all occurance streamed comments (/*COMMENT */) from string
+            data = re.sub(re.compile("/\*.*?\*/",re.DOTALL),"\n" ,data)
+            # remove all occurance singleline comments (//COMMENT\n ) from string
+            data = re.sub(re.compile("//.*?\n" ) ,"\n" ,data)
+        else:
+            data = re.sub(re.compile("/\*.*?\*/",re.DOTALL),"" ,data)
+            data = re.sub(re.compile("//.*?\n" ) ,"" ,data)
 
-        # remove all occurance streamed comments (/*COMMENT */) from string
-        data = re.sub(re.compile("/\*.*?\*/",re.DOTALL),"\n" ,data)
-        # remove all occurance singleline comments (//COMMENT\n ) from string
-        data = re.sub(re.compile("//.*?\n" ) ,"\n" ,data)
-        #print len(data)
-
-        save(input_file + ".new", data) # save the org file as backups
+        if ofile:
+            save(ofile, data) 
+        else:
+            save(input_file + ".new", data) # save the org file as backups
          
+#-----------------------------------------------------------------------------#
+# 
+#-----------------------------------------------------------------------------#
+def keepFuncDecl(input_file, ofile=""):
+    data = ""
+    with open(input_file, "r") as f:
+        for i, line in enumerate(f):
+            IGN=True
+            newline = line.strip()
+            if len(newline) > 0:
+                if newline[0] <> "#" and newline[-1] <> ";":
+                    #print i, line 
+                    IGN=False
+
+            if IGN == False:
+                data += line
+
+    if len(ofile) > 0: 
+        save(ofile, data) 
+
+
+
+#-----------------------------------------------------------------------------#
+# comment out lines (s1, s2) 
+#-----------------------------------------------------------------------------#
+def comment_out_lines(infile, outfile, s1, s2):
+    data = ""
+    with open(infile, "r") as f:
+        for i, line in enumerate(f, 1):
+            if s1+1 <= i <= s2 -1:
+                data += "//\n"
+            else:
+                data += line
+    save(outfile, data)
+
+
+#-----------------------------------------------------------------------------#
+# 
+#-----------------------------------------------------------------------------#
+def find_funcName(input_file):
+    func_name_list=[]
+    with open(input_file, "r") as f:
+        for i, line in enumerate(f):
+            if line and "(" in line and (not line[0] in [" ", "\t"]):
+                splitline = line.split("(")
+                #print splitline[0]
+                #print splitline
+                func_name_list.append(splitline[0])
+    return func_name_list
+
+
+
+
+#-----------------------------------------------------------------------------#
+# identify functions in the source file 
+#-----------------------------------------------------------------------------#
+def gen_functionlist(src):
+    # (1) remove comments
+    data = ""
+    with open(src, "r") as f:
+        for i, line in enumerate(f):
+            noleading = line.strip()
+            if noleading in ["\n","\r\n",""]: # symboles for empty line
+                #print i, " : empty line"
+                pass
+            else:
+                #print i, line 
+                data += str(line)
+    file01=src + "_01_rmEmptyLine"
+    save(file01, data)
+
+    # (2) find out the where the function begin and ends 
+    # working on file01
+
+    # NOTE: if there is a main(), return the beginning and ending line number
+
+    lev = -1; progress = []; result=[];
+    prev_lev = None
+    mainFound = False
+    with open(file01, "r") as f:
+        for i, line in enumerate(f):
+            if "main" in line and line[0] <> "#": mainFound=True; # main() line 
+            for char in line:
+                if char == "{":
+                    #print i, line
+                    if lev == -1: # at the root level
+                        if mainFound: mainStartPos = i; # rmb where main starts
+                        progress = []
+                        result.append(progress)
+                    progress.append([i+1, None]) # store the line num
+                    lev += 1
+                elif char == "}":
+                    #print i, line
+                    if lev > -1:
+                        #print("current lev = {}".format(lev))
+                        if not prev_lev:
+                            prev_lev = lev # update prev lev
+                        
+                        #print("prev_lev = {}".format(prev_lev))
+
+                        if prev_lev == lev:
+                            USE_LAST = True 
+                        elif prev_lev > lev:
+                            prev_lev = lev  # update prev lev
+                            USE_LAST = False 
+
+
+                        if USE_LAST: # still on the same level
+                            lastone = len(progress) - 1
+                            progress[lastone][1] = i + 1
+                        else:
+                            progress[lev][1] = i + 1
+                        #print("=> after updating : {} \t lev = {} \t prevLev = {}".format(progress, lev, prev_lev))
+
+                        if lev == 0 and mainFound: 
+                            mainEndPos=i; # rmb where main ends
+                        lev -= 1
+
+    if mainFound:
+        print("main() is found in {}. \t line#: {} - {}.".format(file01, mainStartPos, mainEndPos))
+
+    #for r in result: print r
+
+
+    #(3) comment the content of the function
+    # NOTE: the 1st element of each item in the result indicates the function's
+    # outmost curly bracket line nuber, we can remove the contents to obtain the function name
+    file02=src + "_02_funcs"
+    subprocess.call("cp " + file01 + " " + file02, shell=True) # use shell for copying
+
+    for r in result:
+        [s1, s2] = r[0]
+        #print s1,s2
+        comment_out_lines(file02, file02, s1, s2)
+
+
+    #(4) remove the comemnted line in (3)
+    file03=src + "_03_funcDecls"
+    remove_comments(file02, ofile=file03)
+
+    # (5) del lines which are not fund declaration
+    file04=src + "_04_funcDecls_clean"
+    keepFuncDecl(file03, ofile=file04)
+
+    # (6) NOTE: read line with "(", consider the string before "(" as the func names
+    func_name_list = find_funcName(file04)
+    #print func_name_list
+
+    return func_name_list
+
+
+#def flowgraph(mainfile, relatedfiles):
+
 
 
 
@@ -176,7 +344,7 @@ def gen_program_flow(app_dir):
             if targetfile[-2:] in [".c"] or targetfile[-3:] in [".cu"] or targetfile[-4:] in [".cpp"]:
                 myfiles.append(targetfile)
 
-        print myfiles 
+        #print myfiles 
 
         #
         # step3: find main function file
@@ -188,7 +356,7 @@ def gen_program_flow(app_dir):
                 main_file = eachfile;
                 break;
 
-        print main_file
+        #print main_file
 
         #
         # step 4: remove the comments in the files
@@ -200,18 +368,32 @@ def gen_program_flow(app_dir):
 
 
         #
-        # step 5: 
+        # step 5: find out all the functions in the files
         #
+        functionlist = gen_functionlist(main_file + ".new")
+        #print functionlist
+
+        #
+        # step 6: 
+        #
+        related_files = [i for i in myfiles if i <> main_file]
+        
+        # read file without empty line
+        current_file = main_file + ".new_01_rmEmptyLine"
+        print current_file
+
+        # figure out when the main()) starts and ends and read codes inbetween
+
+        #with open(current_file, "r") as f:
+        #    for i, line in enumerate(f):
+        #        if line[0] <> "#" and "main" in line:
+
+
 
         # fopen:  cpu read input file
         # malloc: cpu
         # check whether there is a function
 
-
-
-        #
-        # step 6: 
-        #
 
 #-----------------------------------------------------------------------------#
 # GPU Job Table 
