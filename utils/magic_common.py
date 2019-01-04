@@ -7,6 +7,7 @@ import re
 
 import subprocess
 from subprocess import check_call, STDOUT, CalledProcessError,call
+from subprocess import Popen,PIPE,STDOUT 
 DEVNULL = open(os.devnull, 'wb', 0)  # no std out
 
 
@@ -16,58 +17,9 @@ import numpy as np
 #import operator
 
 
-## cudaMemcpyHostToDevice 
-## cudaMemcpy2D
-#CudaAPIs=['cudaMalloc', 'cudaFree', 'cudaMemcpy', "<<<", "cudaMemcpy2D",
-#        "cufft", "cufftDestroy", "cufftXtSetCallback"]
-#
-## ./common/inc/dynlink/cuda_drvapi_dynlink_cuda.h
-#tcuTexRefSetFilterMode
-#
-#
-#tcuMemcpyHtoA
-#tcuMemcpyAtoA
-#tcuMemcpy3D
-#tcuMemcpy2DUnaligned
-#tcuMemcpyHtoDAsync
-#
-#tcuMemAlloc
-#
-#tcuMemAllocPitch
-#tcuMemcpyPeer
-#tcuD3D9Begin
-#
-##./common/inc/dynlink/cuda_drvapi_dynlink_d3d.h:typedef
-#tcuD3D9ResourceGetMappedArray
-#
-#
-#cudaMemset
-#cudaFreeHost
-#
-#
-#cudaEventSynchronize
-#cudaEventRecord
-#cudaEventDestroy
-#
-#cudaDeviceSynchronize
-#
-#cudaBindTexture
-#cudaBindTexture2D
-#cudaBindTextureToArray
-#
-#
-#cufftPlan2d
-#cufftExecC2C
-#
-#
-#cudaStream_t
-#cudaStreamCreate
-#cudaStreamWaitEvent
-#
-
-
-
-
+# read app info
+sys.path.append('.')
+from parseCUDA import *
 
 
 #-----------------------------------------------------------------------------#
@@ -372,10 +324,19 @@ def Genfunctionlist(src, retLineNum=False):
         return func_name_list
 
 
-def parsing_file(targetfile, l1, l2):
+#-----------------------------------------------------------------------------#
+# parsing main file and read related files  
+#-----------------------------------------------------------------------------#
+
+def ParsingFile(targetfile, l1, l2, related_files, Total_Funcs):
     with open(targetfile, "r") as f:
         for i, line in enumerate(f):
             if l1 <= i <= l2:
+
+                for fc in Total_Funcs:
+                    if fc in line:
+                        print("\t=>found func = {}(), at line {}".format(fc, i))
+
                 #print i, line 
 
                 # for loop
@@ -402,6 +363,10 @@ def parsing_file(targetfile, l1, l2):
                 found = re.findall(r'malloc\s*\(', line) 
                 if len(found) > 0:
                     print("malloc at {}".format(i))
+
+
+
+
 
 #-----------------------------------------------------------------------------#
 # Analyze program flow 
@@ -445,6 +410,8 @@ def gen_program_flow(app_dir):
         print("source files:")
         print("\t{}\n".format(myfiles))
 
+
+
         #------------------------------------------
         # step3: find main function file
         #------------------------------------------
@@ -467,15 +434,17 @@ def gen_program_flow(app_dir):
             Remove_comments(eachfile)
 
 
+        Total_Funcs = []
+
+
         #------------------------------------------
         # step 5: find out all the functions in the files
         #------------------------------------------
-        #Genfunctionlist(main_file + ".new", retLineNum=True)
         functionlist, mainfile_linenum_dd = Genfunctionlist(main_file + ".new", retLineNum=True)
         #print mainfile_linenum_dd 
         #print functionlist
 
-
+        for func in functionlist: Total_Funcs.append(func);
 
 
         for f in myfiles:
@@ -488,24 +457,68 @@ def gen_program_flow(app_dir):
                 print functionlist 
                 print "\n\n"
 
+                for func in functionlist: Total_Funcs.append(func);
 
 
-        ##
-        ## step 6: 
-        ##
-        #related_files = [i for i in myfiles if i <> main_file]
+        # clean up Total_Funcs to avoid including the data type
+        for i, func in enumerate(Total_Funcs):
+            funclist=func.split()
+            if len(funclist) > 1:
+                newfunc = funclist[-1]
+                #print i, func, newfunc
+                Total_Funcs[i] = newfunc
+
+        print("Total detected functions:")
+        print Total_Funcs
+        print "\n\n"
+
+
         #
-        ##
-        ## read file without empty line
-        ##
-        #print("reading the file to parse the program structure")
-        #targetfile = mainfile_linenum_dd.keys()[0]
-        #[startLine, endLine] = mainfile_linenum_dd[targetfile]
+        # step : check each function whether it is cpu /gpu calls
+        #
 
-        ## figure out when the main()) starts and ends and read codes inbetween
-        #print targetfile, startLine, endLine, '\n'
+        cufiles = [] 
+        for i, f in enumerate(myfiles):
+            #print i
+            fnew = f + ".new_01_rmEmptyLine"
+            if findCUDA_rt(fnew):
+                cufiles.append(fnew)
 
-        #parsing_file(targetfile, startLine, endLine)
+        if len(cufiles):
+            print("\nfind cuda api in the following files:")
+            for i in cufiles:
+                print i
+
+        print "\n go to the cu files and parse the structure"
+        for i in cufiles:
+            parseCUDAfile(i)
+
+            #api_line = parseCUDAfile(i)
+            #if api_line:
+            #    print api_line
+            ##break
+
+
+
+
+        #
+        # step 6: 
+        #
+        related_files = [i for i in myfiles if i <> main_file]
+
+        #
+        # read file without empty line
+        #
+        print("\nreading the file to parse the program structure")
+        targetfile = mainfile_linenum_dd.keys()[0]
+        [startLine, endLine] = mainfile_linenum_dd[targetfile]
+
+        # figure out when the main()) starts and ends and read codes inbetween
+        print targetfile, startLine, endLine, '\n'
+
+
+
+        #ParsingFile(targetfile, startLine, endLine, related_files, Total_Funcs)
 
 
         #with open(current_file, "r") as f:
