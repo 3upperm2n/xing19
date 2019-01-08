@@ -1,0 +1,232 @@
+==13386== NVPROF is profiling process 13386, command: ./convolutionSeparable 0
+==13386== Some kernel(s) will be replayed on device 0 in order to collect all events/metrics.
+==13386== Profiling application: ./convolutionSeparable 0
+==13386== Profiling result:
+==13386== Metric result:
+"Device","Kernel","Invocations","Metric Name","Metric Description","Min","Max","Avg"
+"GeForce GTX 950 (0)","convolutionColumnsKernel(float*, float*, int, int, int)",17,"sm_efficiency","Multiprocessor Activity",99.603879%,99.713344%,99.665808%
+"GeForce GTX 950 (0)","convolutionColumnsKernel(float*, float*, int, int, int)",17,"achieved_occupancy","Achieved Occupancy",0.919221,0.924888,0.922323
+"GeForce GTX 950 (0)","convolutionColumnsKernel(float*, float*, int, int, int)",17,"ipc","Executed IPC",1.281252,1.295197,1.289793
+"GeForce GTX 950 (0)","convolutionColumnsKernel(float*, float*, int, int, int)",17,"issued_ipc","Issued IPC",1.285339,1.294212,1.289371
+"GeForce GTX 950 (0)","convolutionColumnsKernel(float*, float*, int, int, int)",17,"inst_per_warp","Instructions per warp",319.000000,319.000000,319.000000
+"GeForce GTX 950 (0)","convolutionColumnsKernel(float*, float*, int, int, int)",17,"branch_efficiency","Branch Efficiency",100.000000%,100.000000%,100.000000%
+"GeForce GTX 950 (0)","convolutionColumnsKernel(float*, float*, int, int, int)",17,"warp_execution_efficiency","Warp Execution Efficiency",100.000000%,100.000000%,100.000000%
+"GeForce GTX 950 (0)","convolutionColumnsKernel(float*, float*, int, int, int)",17,"warp_nonpred_execution_efficiency","Warp Non-Predicated Execution Efficiency",99.921630%,99.921630%,99.921630%
+"GeForce GTX 950 (0)","convolutionColumnsKernel(float*, float*, int, int, int)",17,"inst_replay_overhead","Instruction Replay Overhead",0.000102,0.000173,0.000119
+"GeForce GTX 950 (0)","convolutionColumnsKernel(float*, float*, int, int, int)",17,"issue_slot_utilization","Issue Slot Utilization",23.973547%,24.139301%,24.048888%
+"GeForce GTX 950 (0)","convolutionColumnsKernel(float*, float*, int, int, int)",17,"shared_load_transactions_per_request","Shared Memory Load Transactions Per Request",2.000000,2.000000,2.000000
+"GeForce GTX 950 (0)","convolutionColumnsKernel(float*, float*, int, int, int)",17,"shared_store_transactions_per_request","Shared Memory Store Transactions Per Request",2.000000,2.000000,2.000000
+"GeForce GTX 950 (0)","convolutionColumnsKernel(float*, float*, int, int, int)",17,"local_load_transactions_per_request","Local Memory Load Transactions Per Request",0.000000,0.000000,0.000000
+"GeForce GTX 950 (0)","convolutionColumnsKernel(float*, float*, int, int, int)",17,"local_store_transactions_per_request","Local Memory Store Transactions Per Request",0.000000,0.000000,0.000000
+"GeForce GTX 950 (0)","convolutionColumnsKernel(float*, float*, int, int, int)",17,"gld_transactions_per_request","Global Load Transactions Per Request",7.966667,7.966667,7.966667
+"GeForce GTX 950 (0)","convolutionColumnsKernel(float*, float*, int, int, int)",17,"gst_transactions_per_request","Global Store Transactions Per Request",4.000000,4.000000,4.000000
+"GeForce GTX 950 (0)","convolutionColumnsKernel(float*, float*, int, int, int)",17,"shared_store_transactions","Shared Store Transactions",737280,737280,737280
+"GeForce GTX 950 (0)","convolutionColumnsKernel(float*, float*, int, int, int)",17,"shared_load_transactions","Shared Load Transactions",5382144,5382144,5382144
+"GeForce GTX 950 (0)","convolutionColumnsKernel(float*, float*, int, int, int)",17,"local_load_transactions","Local Load Transactions",0,0,0
+"GeForce GTX 950 (0)","convolutionColumnsKernel(float*, float*, int, int, int)",17,"local_store_transactions","Local Store Transactions",0,0,0
+"GeForce GTX 950 (0)","convolutionColumnsKernel(float*, float*, int, int, int)",17,"gld_transactions","Global Load Transactions",2936832,2936832,2936832
+"GeForce GTX 950 (0)","convolutionColumnsKernel(float*, float*, int, int, int)",17,"gst_transactions","Global Store Transactions",1179648,1179648,1179648
+"GeForce GTX 950 (0)","convolutionColumnsKernel(float*, float*, int, int, int)",17,"dram_read_transactions","Device Memory Read Transactions",1468410,1468538,1468458
+"GeForce GTX 950 (0)","convolutionColumnsKernel(float*, float*, int, int, int)",17,"dram_write_transactions","Device Memory Write Transactions",1180817,1181622,1181398
+"GeForce GTX 950 (0)","convolutionColumnsKernel(float*, float*, int, int, int)",17,"global_hit_rate","Global Hit Rate",50.000000%,50.000000%,50.000000%
+"GeForce GTX 950 (0)","convolutionColumnsKernel(float*, float*, int, int, int)",17,"local_hit_rate","Local Hit Rate",0.000000%,0.000000%,0.000000%
+"GeForce GTX 950 (0)","convolutionColumnsKernel(float*, float*, int, int, int)",17,"gld_requested_throughput","Requested Global Load Throughput",41.769788GB/s,41.879794GB/s,41.824766GB/s
+"GeForce GTX 950 (0)","convolutionColumnsKernel(float*, float*, int, int, int)",17,"gst_requested_throughput","Requested Global Store Throughput",33.555646GB/s,33.644019GB/s,33.599325GB/s
+"GeForce GTX 950 (0)","convolutionColumnsKernel(float*, float*, int, int, int)",17,"gld_throughput","Global Load Throughput",41.769788GB/s,41.879794GB/s,41.824766GB/s
+"GeForce GTX 950 (0)","convolutionColumnsKernel(float*, float*, int, int, int)",17,"gst_throughput","Global Store Throughput",33.555646GB/s,33.644019GB/s,33.599325GB/s
+"GeForce GTX 950 (0)","convolutionColumnsKernel(float*, float*, int, int, int)",17,"dram_read_throughput","Device Memory Read Throughput",41.771097GB/s,41.880935GB/s,41.825697GB/s
+"GeForce GTX 950 (0)","convolutionColumnsKernel(float*, float*, int, int, int)",17,"dram_write_throughput","Device Memory Write Throughput",33.599866GB/s,33.694443GB/s,33.649616GB/s
+"GeForce GTX 950 (0)","convolutionColumnsKernel(float*, float*, int, int, int)",17,"tex_cache_throughput","Unified Cache Throughput",41.769788GB/s,41.879794GB/s,41.824766GB/s
+"GeForce GTX 950 (0)","convolutionColumnsKernel(float*, float*, int, int, int)",17,"local_load_throughput","Local Memory Load Throughput",0.000000B/s,0.000000B/s,0.000000B/s
+"GeForce GTX 950 (0)","convolutionColumnsKernel(float*, float*, int, int, int)",17,"local_store_throughput","Local Memory Store Throughput",0.000000B/s,0.000000B/s,0.000000B/s
+"GeForce GTX 950 (0)","convolutionColumnsKernel(float*, float*, int, int, int)",17,"shared_load_throughput","Shared Memory Load Throughput",612.390534GB/s,614.003340GB/s,613.204204GB/s
+"GeForce GTX 950 (0)","convolutionColumnsKernel(float*, float*, int, int, int)",17,"shared_store_throughput","Shared Memory Store Throughput",83.889114GB/s,84.110047GB/s,83.999708GB/s
+"GeForce GTX 950 (0)","convolutionColumnsKernel(float*, float*, int, int, int)",17,"gld_efficiency","Global Memory Load Efficiency",100.000000%,100.000000%,100.000000%
+"GeForce GTX 950 (0)","convolutionColumnsKernel(float*, float*, int, int, int)",17,"gst_efficiency","Global Memory Store Efficiency",100.000000%,100.000000%,100.000000%
+"GeForce GTX 950 (0)","convolutionColumnsKernel(float*, float*, int, int, int)",17,"tex_cache_transactions","Unified Cache Transactions",1468416,1468416,1468416
+"GeForce GTX 950 (0)","convolutionColumnsKernel(float*, float*, int, int, int)",17,"cf_fu_utilization","Control-Flow Function Unit Utilization","Low (1)","Low (1)","Low (1)"
+"GeForce GTX 950 (0)","convolutionColumnsKernel(float*, float*, int, int, int)",17,"tex_fu_utilization","Texture Function Unit Utilization","Low (2)","Low (2)","Low (2)"
+"GeForce GTX 950 (0)","convolutionColumnsKernel(float*, float*, int, int, int)",17,"ldst_fu_utilization","Load/Store Function Unit Utilization","Low (2)","Low (2)","Low (2)"
+"GeForce GTX 950 (0)","convolutionColumnsKernel(float*, float*, int, int, int)",17,"double_precision_fu_utilization","Double-Precision Function Unit Utilization","Idle (0)","Idle (0)","Idle (0)"
+"GeForce GTX 950 (0)","convolutionColumnsKernel(float*, float*, int, int, int)",17,"special_fu_utilization","Special Function Unit Utilization","Idle (0)","Idle (0)","Idle (0)"
+"GeForce GTX 950 (0)","convolutionColumnsKernel(float*, float*, int, int, int)",17,"single_precision_fu_utilization","Single-Precision Function Unit Utilization","Low (3)","Low (3)","Low (3)"
+"GeForce GTX 950 (0)","convolutionColumnsKernel(float*, float*, int, int, int)",17,"flop_count_dp","Floating Point Operations(Double Precision)",0,0,0
+"GeForce GTX 950 (0)","convolutionColumnsKernel(float*, float*, int, int, int)",17,"flop_count_dp_add","Floating Point Operations(Double Precision Add)",0,0,0
+"GeForce GTX 950 (0)","convolutionColumnsKernel(float*, float*, int, int, int)",17,"flop_count_dp_fma","Floating Point Operations(Double Precision FMA)",0,0,0
+"GeForce GTX 950 (0)","convolutionColumnsKernel(float*, float*, int, int, int)",17,"flop_count_dp_mul","Floating Point Operations(Double Precision Mul)",0,0,0
+"GeForce GTX 950 (0)","convolutionColumnsKernel(float*, float*, int, int, int)",17,"flop_count_sp","Floating Point Operations(Single Precision)",320864256,320864256,320864256
+"GeForce GTX 950 (0)","convolutionColumnsKernel(float*, float*, int, int, int)",17,"flop_count_sp_add","Floating Point Operations(Single Precision Add)",0,0,0
+"GeForce GTX 950 (0)","convolutionColumnsKernel(float*, float*, int, int, int)",17,"flop_count_sp_fma","Floating Point Operations(Single Precision FMA)",160432128,160432128,160432128
+"GeForce GTX 950 (0)","convolutionColumnsKernel(float*, float*, int, int, int)",17,"flop_count_sp_mul","Floating Point Operation(Single Precision Mul)",0,0,0
+"GeForce GTX 950 (0)","convolutionColumnsKernel(float*, float*, int, int, int)",17,"flop_count_sp_special","Floating Point Operations(Single Precision Special)",0,0,0
+"GeForce GTX 950 (0)","convolutionColumnsKernel(float*, float*, int, int, int)",17,"inst_executed","Instructions Executed",11759616,11759616,11759616
+"GeForce GTX 950 (0)","convolutionColumnsKernel(float*, float*, int, int, int)",17,"inst_issued","Instructions Issued",11760812,11761646,11761079
+"GeForce GTX 950 (0)","convolutionColumnsKernel(float*, float*, int, int, int)",17,"dram_utilization","Device Memory Utilization","High (8)","High (8)","High (8)"
+"GeForce GTX 950 (0)","convolutionColumnsKernel(float*, float*, int, int, int)",17,"tex_utilization","Unified Cache Utilization","Low (1)","Low (1)","Low (1)"
+"GeForce GTX 950 (0)","convolutionColumnsKernel(float*, float*, int, int, int)",17,"shared_efficiency","Shared Memory Efficiency",50.000000%,50.000000%,50.000000%
+"GeForce GTX 950 (0)","convolutionColumnsKernel(float*, float*, int, int, int)",17,"shared_utilization","Shared Memory Utilization","High (7)","High (7)","High (7)"
+"GeForce GTX 950 (0)","convolutionColumnsKernel(float*, float*, int, int, int)",17,"inst_fp_32","FP Instructions(Single)",160432128,160432128,160432128
+"GeForce GTX 950 (0)","convolutionColumnsKernel(float*, float*, int, int, int)",17,"inst_fp_64","FP Instructions(Double)",0,0,0
+"GeForce GTX 950 (0)","convolutionColumnsKernel(float*, float*, int, int, int)",17,"inst_integer","Integer Instructions",72916992,72916992,72916992
+"GeForce GTX 950 (0)","convolutionColumnsKernel(float*, float*, int, int, int)",17,"inst_bit_convert","Bit-Convert Instructions",0,0,0
+"GeForce GTX 950 (0)","convolutionColumnsKernel(float*, float*, int, int, int)",17,"inst_control","Control-Flow Instructions",1179648,1179648,1179648
+"GeForce GTX 950 (0)","convolutionColumnsKernel(float*, float*, int, int, int)",17,"inst_compute_ld_st","Load/Store Instructions",119095296,119095296,119095296
+"GeForce GTX 950 (0)","convolutionColumnsKernel(float*, float*, int, int, int)",17,"inst_misc","Misc Instructions",22388736,22388736,22388736
+"GeForce GTX 950 (0)","convolutionColumnsKernel(float*, float*, int, int, int)",17,"inst_inter_thread_communication","Inter-Thread Instructions",0,0,0
+"GeForce GTX 950 (0)","convolutionColumnsKernel(float*, float*, int, int, int)",17,"issue_slots","Issue Slots",8774392,8774839,8774541
+"GeForce GTX 950 (0)","convolutionColumnsKernel(float*, float*, int, int, int)",17,"cf_issued","Issued Control-Flow Instructions",36864,36864,36864
+"GeForce GTX 950 (0)","convolutionColumnsKernel(float*, float*, int, int, int)",17,"cf_executed","Executed Control-Flow Instructions",36864,36864,36864
+"GeForce GTX 950 (0)","convolutionColumnsKernel(float*, float*, int, int, int)",17,"ldst_issued","Issued Load/Store Instructions",5892096,5892096,5892096
+"GeForce GTX 950 (0)","convolutionColumnsKernel(float*, float*, int, int, int)",17,"ldst_executed","Executed Load/Store Instructions",3907584,3907584,3907584
+"GeForce GTX 950 (0)","convolutionColumnsKernel(float*, float*, int, int, int)",17,"atomic_transactions","Atomic Transactions",0,0,0
+"GeForce GTX 950 (0)","convolutionColumnsKernel(float*, float*, int, int, int)",17,"atomic_transactions_per_request","Atomic Transactions Per Request",0.000000,0.000000,0.000000
+"GeForce GTX 950 (0)","convolutionColumnsKernel(float*, float*, int, int, int)",17,"stall_inst_fetch","Issue Stall Reasons (Instructions Fetch)",1.039624%,1.081228%,1.061017%
+"GeForce GTX 950 (0)","convolutionColumnsKernel(float*, float*, int, int, int)",17,"stall_exec_dependency","Issue Stall Reasons (Execution Dependency)",39.658455%,40.152969%,39.831636%
+"GeForce GTX 950 (0)","convolutionColumnsKernel(float*, float*, int, int, int)",17,"stall_memory_dependency","Issue Stall Reasons (Data Request)",17.034381%,17.573529%,17.348862%
+"GeForce GTX 950 (0)","convolutionColumnsKernel(float*, float*, int, int, int)",17,"stall_texture","Issue Stall Reasons (Texture)",2.883985%,3.196487%,2.980512%
+"GeForce GTX 950 (0)","convolutionColumnsKernel(float*, float*, int, int, int)",17,"stall_sync","Issue Stall Reasons (Synchronization)",7.191826%,7.659965%,7.428027%
+"GeForce GTX 950 (0)","convolutionColumnsKernel(float*, float*, int, int, int)",17,"stall_other","Issue Stall Reasons (Other)",20.449176%,20.941396%,20.665664%
+"GeForce GTX 950 (0)","convolutionColumnsKernel(float*, float*, int, int, int)",17,"stall_constant_memory_dependency","Issue Stall Reasons (Immediate constant)",0.028615%,0.062582%,0.043782%
+"GeForce GTX 950 (0)","convolutionColumnsKernel(float*, float*, int, int, int)",17,"stall_pipe_busy","Issue Stall Reasons (Pipe Busy)",0.395944%,0.525354%,0.474101%
+"GeForce GTX 950 (0)","convolutionColumnsKernel(float*, float*, int, int, int)",17,"stall_memory_throttle","Issue Stall Reasons (Memory Throttle)",9.411492%,10.012577%,9.771028%
+"GeForce GTX 950 (0)","convolutionColumnsKernel(float*, float*, int, int, int)",17,"stall_not_selected","Issue Stall Reasons (Not Selected)",0.383296%,0.410530%,0.395371%
+"GeForce GTX 950 (0)","convolutionColumnsKernel(float*, float*, int, int, int)",17,"sysmem_read_transactions","System Memory Read Transactions",0,0,0
+"GeForce GTX 950 (0)","convolutionColumnsKernel(float*, float*, int, int, int)",17,"sysmem_write_transactions","System Memory Write Transactions",5,5,5
+"GeForce GTX 950 (0)","convolutionColumnsKernel(float*, float*, int, int, int)",17,"l2_read_transactions","L2 Read Transactions",1468471,1468731,1468576
+"GeForce GTX 950 (0)","convolutionColumnsKernel(float*, float*, int, int, int)",17,"l2_write_transactions","L2 Write Transactions",1179654,1179654,1179654
+"GeForce GTX 950 (0)","convolutionColumnsKernel(float*, float*, int, int, int)",17,"ecc_transactions","ECC Transactions",0,0,0
+"GeForce GTX 950 (0)","convolutionColumnsKernel(float*, float*, int, int, int)",17,"local_memory_overhead","Local Memory Overhead",0.000000%,0.000000%,0.000000%
+"GeForce GTX 950 (0)","convolutionColumnsKernel(float*, float*, int, int, int)",17,"tex_cache_hit_rate","Unified Cache Hit Rate",50.000000%,50.000000%,50.000000%
+"GeForce GTX 950 (0)","convolutionColumnsKernel(float*, float*, int, int, int)",17,"l2_tex_read_hit_rate","L2 Hit Rate (Texture Reads)",0.000953%,0.002996%,0.001739%
+"GeForce GTX 950 (0)","convolutionColumnsKernel(float*, float*, int, int, int)",17,"l2_tex_write_hit_rate","L2 Hit Rate (Texture Writes)",49.999152%,50.000000%,49.999830%
+"GeForce GTX 950 (0)","convolutionColumnsKernel(float*, float*, int, int, int)",17,"l2_tex_read_throughput","L2 Throughput (Texture Reads)",41.769788GB/s,41.879794GB/s,41.824766GB/s
+"GeForce GTX 950 (0)","convolutionColumnsKernel(float*, float*, int, int, int)",17,"l2_tex_write_throughput","L2 Throughput (Texture Writes)",33.555646GB/s,33.644019GB/s,33.599325GB/s
+"GeForce GTX 950 (0)","convolutionColumnsKernel(float*, float*, int, int, int)",17,"l2_tex_read_transactions","L2 Transactions (Texture Reads)",1468416,1468416,1468416
+"GeForce GTX 950 (0)","convolutionColumnsKernel(float*, float*, int, int, int)",17,"l2_tex_write_transactions","L2 Transactions (Texture Writes)",1179648,1179648,1179648
+"GeForce GTX 950 (0)","convolutionColumnsKernel(float*, float*, int, int, int)",17,"l2_read_throughput","L2 Throughput (Reads)",41.771353GB/s,41.881363GB/s,41.829422GB/s
+"GeForce GTX 950 (0)","convolutionColumnsKernel(float*, float*, int, int, int)",17,"l2_write_throughput","L2 Throughput (Writes)",33.555816GB/s,33.644190GB/s,33.599325GB/s
+"GeForce GTX 950 (0)","convolutionColumnsKernel(float*, float*, int, int, int)",17,"sysmem_read_throughput","System Memory Read Throughput",0.000000B/s,0.000000B/s,0.000000B/s
+"GeForce GTX 950 (0)","convolutionColumnsKernel(float*, float*, int, int, int)",17,"sysmem_write_throughput","System Memory Write Throughput",149.135742KB/s,149.528320KB/s,0.000000B/s
+"GeForce GTX 950 (0)","convolutionColumnsKernel(float*, float*, int, int, int)",17,"l2_utilization","L2 Cache Utilization","Low (3)","Low (3)","Low (3)"
+"GeForce GTX 950 (0)","convolutionColumnsKernel(float*, float*, int, int, int)",17,"l2_atomic_throughput","L2 Throughput (Atomic requests)",0.000000B/s,0.000000B/s,0.000000B/s
+"GeForce GTX 950 (0)","convolutionColumnsKernel(float*, float*, int, int, int)",17,"l2_atomic_transactions","L2 Transactions (Atomic requests)",0,0,0
+"GeForce GTX 950 (0)","convolutionColumnsKernel(float*, float*, int, int, int)",17,"sysmem_utilization","System Memory Utilization","Low (1)","Low (1)","Low (1)"
+"GeForce GTX 950 (0)","convolutionColumnsKernel(float*, float*, int, int, int)",17,"ecc_throughput","ECC Throughput",0.000000B/s,0.000000B/s,0.000000B/s
+"GeForce GTX 950 (0)","convolutionColumnsKernel(float*, float*, int, int, int)",17,"sysmem_read_utilization","System Memory Read Utilization","Idle (0)","Idle (0)","Idle (0)"
+"GeForce GTX 950 (0)","convolutionColumnsKernel(float*, float*, int, int, int)",17,"sysmem_write_utilization","System Memory Write Utilization","Low (1)","Low (1)","Low (1)"
+"GeForce GTX 950 (0)","convolutionColumnsKernel(float*, float*, int, int, int)",17,"eligible_warps_per_cycle","Eligible Warps Per Active Cycle",1.181697,1.201734,1.190891
+"GeForce GTX 950 (0)","convolutionColumnsKernel(float*, float*, int, int, int)",17,"flop_sp_efficiency","FLOP Efficiency(Peak Single)",13.633458%,13.752699%,13.694096%
+"GeForce GTX 950 (0)","convolutionColumnsKernel(float*, float*, int, int, int)",17,"flop_dp_efficiency","FLOP Efficiency(Peak Double)",0.000000%,0.000000%,0.000000%
+"GeForce GTX 950 (0)","convolutionRowsKernel(float*, float*, int, int, int)",17,"sm_efficiency","Multiprocessor Activity",99.710229%,99.782686%,99.745721%
+"GeForce GTX 950 (0)","convolutionRowsKernel(float*, float*, int, int, int)",17,"achieved_occupancy","Achieved Occupancy",0.958273,0.970810,0.964665
+"GeForce GTX 950 (0)","convolutionRowsKernel(float*, float*, int, int, int)",17,"ipc","Executed IPC",1.164003,1.164799,1.164322
+"GeForce GTX 950 (0)","convolutionRowsKernel(float*, float*, int, int, int)",17,"issued_ipc","Issued IPC",1.164051,1.164915,1.164558
+"GeForce GTX 950 (0)","convolutionRowsKernel(float*, float*, int, int, int)",17,"inst_per_warp","Instructions per warp",328.000000,328.000000,328.000000
+"GeForce GTX 950 (0)","convolutionRowsKernel(float*, float*, int, int, int)",17,"branch_efficiency","Branch Efficiency",100.000000%,100.000000%,100.000000%
+"GeForce GTX 950 (0)","convolutionRowsKernel(float*, float*, int, int, int)",17,"warp_execution_efficiency","Warp Execution Efficiency",100.000000%,100.000000%,100.000000%
+"GeForce GTX 950 (0)","convolutionRowsKernel(float*, float*, int, int, int)",17,"warp_nonpred_execution_efficiency","Warp Non-Predicated Execution Efficiency",99.974593%,99.974593%,99.974593%
+"GeForce GTX 950 (0)","convolutionRowsKernel(float*, float*, int, int, int)",17,"inst_replay_overhead","Instruction Replay Overhead",0.000116,0.000147,0.000133
+"GeForce GTX 950 (0)","convolutionRowsKernel(float*, float*, int, int, int)",17,"issue_slot_utilization","Issue Slot Utilization",18.455633%,18.469162%,18.463546%
+"GeForce GTX 950 (0)","convolutionRowsKernel(float*, float*, int, int, int)",17,"shared_load_transactions_per_request","Shared Memory Load Transactions Per Request",2.000000,2.000000,2.000000
+"GeForce GTX 950 (0)","convolutionRowsKernel(float*, float*, int, int, int)",17,"shared_store_transactions_per_request","Shared Memory Store Transactions Per Request",2.000000,2.000000,2.000000
+"GeForce GTX 950 (0)","convolutionRowsKernel(float*, float*, int, int, int)",17,"local_load_transactions_per_request","Local Memory Load Transactions Per Request",0.000000,0.000000,0.000000
+"GeForce GTX 950 (0)","convolutionRowsKernel(float*, float*, int, int, int)",17,"local_store_transactions_per_request","Local Memory Store Transactions Per Request",0.000000,0.000000,0.000000
+"GeForce GTX 950 (0)","convolutionRowsKernel(float*, float*, int, int, int)",17,"gld_transactions_per_request","Global Load Transactions Per Request",7.933333,7.933333,7.933333
+"GeForce GTX 950 (0)","convolutionRowsKernel(float*, float*, int, int, int)",17,"gst_transactions_per_request","Global Store Transactions Per Request",4.000000,4.000000,4.000000
+"GeForce GTX 950 (0)","convolutionRowsKernel(float*, float*, int, int, int)",17,"shared_store_transactions","Shared Store Transactions",737280,737280,737280
+"GeForce GTX 950 (0)","convolutionRowsKernel(float*, float*, int, int, int)",17,"shared_load_transactions","Shared Load Transactions",9510912,9510912,9510912
+"GeForce GTX 950 (0)","convolutionRowsKernel(float*, float*, int, int, int)",17,"local_load_transactions","Local Load Transactions",0,0,0
+"GeForce GTX 950 (0)","convolutionRowsKernel(float*, float*, int, int, int)",17,"local_store_transactions","Local Store Transactions",0,0,0
+"GeForce GTX 950 (0)","convolutionRowsKernel(float*, float*, int, int, int)",17,"gld_transactions","Global Load Transactions",2924544,2924544,2924544
+"GeForce GTX 950 (0)","convolutionRowsKernel(float*, float*, int, int, int)",17,"gst_transactions","Global Store Transactions",1179648,1179648,1179648
+"GeForce GTX 950 (0)","convolutionRowsKernel(float*, float*, int, int, int)",17,"dram_read_transactions","Device Memory Read Transactions",1179662,1179790,1179726
+"GeForce GTX 950 (0)","convolutionRowsKernel(float*, float*, int, int, int)",17,"dram_write_transactions","Device Memory Write Transactions",1181332,1181616,1181465
+"GeForce GTX 950 (0)","convolutionRowsKernel(float*, float*, int, int, int)",17,"global_hit_rate","Global Hit Rate",50.000000%,50.000000%,50.000000%
+"GeForce GTX 950 (0)","convolutionRowsKernel(float*, float*, int, int, int)",17,"local_hit_rate","Local Hit Rate",0.000000%,0.000000%,0.000000%
+"GeForce GTX 950 (0)","convolutionRowsKernel(float*, float*, int, int, int)",17,"gld_requested_throughput","Requested Global Load Throughput",36.501039GB/s,36.523034GB/s,36.507845GB/s
+"GeForce GTX 950 (0)","convolutionRowsKernel(float*, float*, int, int, int)",17,"gst_requested_throughput","Requested Global Store Throughput",29.446216GB/s,29.463960GB/s,29.451214GB/s
+"GeForce GTX 950 (0)","convolutionRowsKernel(float*, float*, int, int, int)",17,"gld_throughput","Global Load Throughput",36.501039GB/s,36.523034GB/s,36.507845GB/s
+"GeForce GTX 950 (0)","convolutionRowsKernel(float*, float*, int, int, int)",17,"gst_throughput","Global Store Throughput",29.446216GB/s,29.463960GB/s,29.451214GB/s
+"GeForce GTX 950 (0)","convolutionRowsKernel(float*, float*, int, int, int)",17,"dram_read_throughput","Device Memory Read Throughput",29.446566GB/s,29.464310GB/s,29.454008GB/s
+"GeForce GTX 950 (0)","convolutionRowsKernel(float*, float*, int, int, int)",17,"dram_write_throughput","Device Memory Write Throughput",29.491811GB/s,29.509618GB/s,29.496849GB/s
+"GeForce GTX 950 (0)","convolutionRowsKernel(float*, float*, int, int, int)",17,"tex_cache_throughput","Unified Cache Throughput",36.501039GB/s,36.523034GB/s,36.507845GB/s
+"GeForce GTX 950 (0)","convolutionRowsKernel(float*, float*, int, int, int)",17,"local_load_throughput","Local Memory Load Throughput",0.000000B/s,0.000000B/s,0.000000B/s
+"GeForce GTX 950 (0)","convolutionRowsKernel(float*, float*, int, int, int)",17,"local_store_throughput","Local Memory Store Throughput",0.000000B/s,0.000000B/s,0.000000B/s
+"GeForce GTX 950 (0)","convolutionRowsKernel(float*, float*, int, int, int)",17,"shared_load_throughput","Shared Memory Load Throughput",949.640479GB/s,950.212717GB/s,949.842855GB/s
+"GeForce GTX 950 (0)","convolutionRowsKernel(float*, float*, int, int, int)",17,"shared_store_throughput","Shared Memory Store Throughput",73.615541GB/s,73.659901GB/s,73.630363GB/s
+"GeForce GTX 950 (0)","convolutionRowsKernel(float*, float*, int, int, int)",17,"gld_efficiency","Global Memory Load Efficiency",100.000000%,100.000000%,100.000000%
+"GeForce GTX 950 (0)","convolutionRowsKernel(float*, float*, int, int, int)",17,"gst_efficiency","Global Memory Store Efficiency",100.000000%,100.000000%,100.000000%
+"GeForce GTX 950 (0)","convolutionRowsKernel(float*, float*, int, int, int)",17,"tex_cache_transactions","Unified Cache Transactions",1462272,1462272,1462272
+"GeForce GTX 950 (0)","convolutionRowsKernel(float*, float*, int, int, int)",17,"cf_fu_utilization","Control-Flow Function Unit Utilization","Low (1)","Low (1)","Low (1)"
+"GeForce GTX 950 (0)","convolutionRowsKernel(float*, float*, int, int, int)",17,"tex_fu_utilization","Texture Function Unit Utilization","Low (2)","Low (2)","Low (2)"
+"GeForce GTX 950 (0)","convolutionRowsKernel(float*, float*, int, int, int)",17,"ldst_fu_utilization","Load/Store Function Unit Utilization","Low (3)","Low (3)","Low (3)"
+"GeForce GTX 950 (0)","convolutionRowsKernel(float*, float*, int, int, int)",17,"double_precision_fu_utilization","Double-Precision Function Unit Utilization","Idle (0)","Idle (0)","Idle (0)"
+"GeForce GTX 950 (0)","convolutionRowsKernel(float*, float*, int, int, int)",17,"special_fu_utilization","Special Function Unit Utilization","Idle (0)","Idle (0)","Idle (0)"
+"GeForce GTX 950 (0)","convolutionRowsKernel(float*, float*, int, int, int)",17,"single_precision_fu_utilization","Single-Precision Function Unit Utilization","Low (2)","Low (2)","Low (2)"
+"GeForce GTX 950 (0)","convolutionRowsKernel(float*, float*, int, int, int)",17,"flop_count_dp","Floating Point Operations(Double Precision)",0,0,0
+"GeForce GTX 950 (0)","convolutionRowsKernel(float*, float*, int, int, int)",17,"flop_count_dp_add","Floating Point Operations(Double Precision Add)",0,0,0
+"GeForce GTX 950 (0)","convolutionRowsKernel(float*, float*, int, int, int)",17,"flop_count_dp_fma","Floating Point Operations(Double Precision FMA)",0,0,0
+"GeForce GTX 950 (0)","convolutionRowsKernel(float*, float*, int, int, int)",17,"flop_count_dp_mul","Floating Point Operations(Double Precision Mul)",0,0,0
+"GeForce GTX 950 (0)","convolutionRowsKernel(float*, float*, int, int, int)",17,"flop_count_sp","Floating Point Operations(Single Precision)",320864256,320864256,320864256
+"GeForce GTX 950 (0)","convolutionRowsKernel(float*, float*, int, int, int)",17,"flop_count_sp_add","Floating Point Operations(Single Precision Add)",0,0,0
+"GeForce GTX 950 (0)","convolutionRowsKernel(float*, float*, int, int, int)",17,"flop_count_sp_fma","Floating Point Operations(Single Precision FMA)",160432128,160432128,160432128
+"GeForce GTX 950 (0)","convolutionRowsKernel(float*, float*, int, int, int)",17,"flop_count_sp_mul","Floating Point Operation(Single Precision Mul)",0,0,0
+"GeForce GTX 950 (0)","convolutionRowsKernel(float*, float*, int, int, int)",17,"flop_count_sp_special","Floating Point Operations(Single Precision Special)",0,0,0
+"GeForce GTX 950 (0)","convolutionRowsKernel(float*, float*, int, int, int)",17,"inst_executed","Instructions Executed",12091392,12091392,12091392
+"GeForce GTX 950 (0)","convolutionRowsKernel(float*, float*, int, int, int)",17,"inst_issued","Instructions Issued",12092665,12093097,12092927
+"GeForce GTX 950 (0)","convolutionRowsKernel(float*, float*, int, int, int)",17,"dram_utilization","Device Memory Utilization","Mid (6)","Mid (6)","Mid (6)"
+"GeForce GTX 950 (0)","convolutionRowsKernel(float*, float*, int, int, int)",17,"tex_utilization","Unified Cache Utilization","Low (1)","Low (1)","Low (1)"
+"GeForce GTX 950 (0)","convolutionRowsKernel(float*, float*, int, int, int)",17,"shared_efficiency","Shared Memory Efficiency",50.000000%,50.000000%,50.000000%
+"GeForce GTX 950 (0)","convolutionRowsKernel(float*, float*, int, int, int)",17,"shared_utilization","Shared Memory Utilization","Max (10)","Max (10)","Max (10)"
+"GeForce GTX 950 (0)","convolutionRowsKernel(float*, float*, int, int, int)",17,"inst_fp_32","FP Instructions(Single)",160432128,160432128,160432128
+"GeForce GTX 950 (0)","convolutionRowsKernel(float*, float*, int, int, int)",17,"inst_fp_64","FP Instructions(Double)",0,0,0
+"GeForce GTX 950 (0)","convolutionRowsKernel(float*, float*, int, int, int)",17,"inst_integer","Integer Instructions",24772608,24772608,24772608
+"GeForce GTX 950 (0)","convolutionRowsKernel(float*, float*, int, int, int)",17,"inst_bit_convert","Bit-Convert Instructions",0,0,0
+"GeForce GTX 950 (0)","convolutionRowsKernel(float*, float*, int, int, int)",17,"inst_control","Control-Flow Instructions",1179648,1179648,1179648
+"GeForce GTX 950 (0)","convolutionRowsKernel(float*, float*, int, int, int)",17,"inst_compute_ld_st","Load/Store Instructions",185106432,185106432,185106432
+"GeForce GTX 950 (0)","convolutionRowsKernel(float*, float*, int, int, int)",17,"inst_misc","Misc Instructions",15335424,15335424,15335424
+"GeForce GTX 950 (0)","convolutionRowsKernel(float*, float*, int, int, int)",17,"inst_inter_thread_communication","Inter-Thread Instructions",0,0,0
+"GeForce GTX 950 (0)","convolutionRowsKernel(float*, float*, int, int, int)",17,"issue_slots","Issue Slots",7668910,7669281,7669130
+"GeForce GTX 950 (0)","convolutionRowsKernel(float*, float*, int, int, int)",17,"cf_issued","Issued Control-Flow Instructions",36864,36864,36864
+"GeForce GTX 950 (0)","convolutionRowsKernel(float*, float*, int, int, int)",17,"cf_executed","Executed Control-Flow Instructions",36864,36864,36864
+"GeForce GTX 950 (0)","convolutionRowsKernel(float*, float*, int, int, int)",17,"ldst_issued","Issued Load/Store Instructions",7950336,7950336,7950336
+"GeForce GTX 950 (0)","convolutionRowsKernel(float*, float*, int, int, int)",17,"ldst_executed","Executed Load/Store Instructions",5971968,5971968,5971968
+"GeForce GTX 950 (0)","convolutionRowsKernel(float*, float*, int, int, int)",17,"atomic_transactions","Atomic Transactions",0,0,0
+"GeForce GTX 950 (0)","convolutionRowsKernel(float*, float*, int, int, int)",17,"atomic_transactions_per_request","Atomic Transactions Per Request",0.000000,0.000000,0.000000
+"GeForce GTX 950 (0)","convolutionRowsKernel(float*, float*, int, int, int)",17,"stall_inst_fetch","Issue Stall Reasons (Instructions Fetch)",0.502243%,0.544960%,0.526705%
+"GeForce GTX 950 (0)","convolutionRowsKernel(float*, float*, int, int, int)",17,"stall_exec_dependency","Issue Stall Reasons (Execution Dependency)",26.391875%,27.995376%,27.134857%
+"GeForce GTX 950 (0)","convolutionRowsKernel(float*, float*, int, int, int)",17,"stall_memory_dependency","Issue Stall Reasons (Data Request)",0.354449%,0.549581%,0.417245%
+"GeForce GTX 950 (0)","convolutionRowsKernel(float*, float*, int, int, int)",17,"stall_texture","Issue Stall Reasons (Texture)",0.198132%,0.216714%,0.208876%
+"GeForce GTX 950 (0)","convolutionRowsKernel(float*, float*, int, int, int)",17,"stall_sync","Issue Stall Reasons (Synchronization)",7.578742%,10.906721%,9.272559%
+"GeForce GTX 950 (0)","convolutionRowsKernel(float*, float*, int, int, int)",17,"stall_other","Issue Stall Reasons (Other)",39.520525%,41.672529%,40.806923%
+"GeForce GTX 950 (0)","convolutionRowsKernel(float*, float*, int, int, int)",17,"stall_constant_memory_dependency","Issue Stall Reasons (Immediate constant)",0.022759%,0.052732%,0.037410%
+"GeForce GTX 950 (0)","convolutionRowsKernel(float*, float*, int, int, int)",17,"stall_pipe_busy","Issue Stall Reasons (Pipe Busy)",17.841044%,18.791081%,18.342906%
+"GeForce GTX 950 (0)","convolutionRowsKernel(float*, float*, int, int, int)",17,"stall_memory_throttle","Issue Stall Reasons (Memory Throttle)",0.458895%,0.488428%,0.470812%
+"GeForce GTX 950 (0)","convolutionRowsKernel(float*, float*, int, int, int)",17,"stall_not_selected","Issue Stall Reasons (Not Selected)",2.695427%,2.892860%,2.781707%
+"GeForce GTX 950 (0)","convolutionRowsKernel(float*, float*, int, int, int)",17,"sysmem_read_transactions","System Memory Read Transactions",0,0,0
+"GeForce GTX 950 (0)","convolutionRowsKernel(float*, float*, int, int, int)",17,"sysmem_write_transactions","System Memory Write Transactions",5,5,5
+"GeForce GTX 950 (0)","convolutionRowsKernel(float*, float*, int, int, int)",17,"l2_read_transactions","L2 Read Transactions",1462327,1462599,1462433
+"GeForce GTX 950 (0)","convolutionRowsKernel(float*, float*, int, int, int)",17,"l2_write_transactions","L2 Write Transactions",1179654,1179654,1179654
+"GeForce GTX 950 (0)","convolutionRowsKernel(float*, float*, int, int, int)",17,"ecc_transactions","ECC Transactions",0,0,0
+"GeForce GTX 950 (0)","convolutionRowsKernel(float*, float*, int, int, int)",17,"local_memory_overhead","Local Memory Overhead",0.000000%,0.000000%,0.000000%
+"GeForce GTX 950 (0)","convolutionRowsKernel(float*, float*, int, int, int)",17,"tex_cache_hit_rate","Unified Cache Hit Rate",50.000000%,50.000000%,50.000000%
+"GeForce GTX 950 (0)","convolutionRowsKernel(float*, float*, int, int, int)",17,"l2_tex_read_hit_rate","L2 Hit Rate (Texture Reads)",19.327731%,19.327731%,19.327731%
+"GeForce GTX 950 (0)","convolutionRowsKernel(float*, float*, int, int, int)",17,"l2_tex_write_hit_rate","L2 Hit Rate (Texture Writes)",50.000000%,50.000000%,50.000000%
+"GeForce GTX 950 (0)","convolutionRowsKernel(float*, float*, int, int, int)",17,"l2_tex_read_throughput","L2 Throughput (Texture Reads)",36.501039GB/s,36.523034GB/s,36.507845GB/s
+"GeForce GTX 950 (0)","convolutionRowsKernel(float*, float*, int, int, int)",17,"l2_tex_write_throughput","L2 Throughput (Texture Writes)",29.446216GB/s,29.463960GB/s,29.451214GB/s
+"GeForce GTX 950 (0)","convolutionRowsKernel(float*, float*, int, int, int)",17,"l2_tex_read_transactions","L2 Transactions (Texture Reads)",1462272,1462272,1462272
+"GeForce GTX 950 (0)","convolutionRowsKernel(float*, float*, int, int, int)",17,"l2_tex_write_transactions","L2 Transactions (Texture Writes)",1179648,1179648,1179648
+"GeForce GTX 950 (0)","convolutionRowsKernel(float*, float*, int, int, int)",17,"l2_read_throughput","L2 Throughput (Reads)",36.502412GB/s,36.524408GB/s,36.511570GB/s
+"GeForce GTX 950 (0)","convolutionRowsKernel(float*, float*, int, int, int)",17,"l2_write_throughput","L2 Throughput (Writes)",29.446366GB/s,29.464110GB/s,29.452145GB/s
+"GeForce GTX 950 (0)","convolutionRowsKernel(float*, float*, int, int, int)",17,"sysmem_read_throughput","System Memory Read Throughput",0.000000B/s,0.000000B/s,0.000000B/s
+"GeForce GTX 950 (0)","convolutionRowsKernel(float*, float*, int, int, int)",17,"sysmem_write_throughput","System Memory Write Throughput",130.872070KB/s,130.950195KB/s,0.000000B/s
+"GeForce GTX 950 (0)","convolutionRowsKernel(float*, float*, int, int, int)",17,"l2_utilization","L2 Cache Utilization","Low (2)","Low (2)","Low (2)"
+"GeForce GTX 950 (0)","convolutionRowsKernel(float*, float*, int, int, int)",17,"l2_atomic_throughput","L2 Throughput (Atomic requests)",0.000000B/s,0.000000B/s,0.000000B/s
+"GeForce GTX 950 (0)","convolutionRowsKernel(float*, float*, int, int, int)",17,"l2_atomic_transactions","L2 Transactions (Atomic requests)",0,0,0
+"GeForce GTX 950 (0)","convolutionRowsKernel(float*, float*, int, int, int)",17,"sysmem_utilization","System Memory Utilization","Low (1)","Low (1)","Low (1)"
+"GeForce GTX 950 (0)","convolutionRowsKernel(float*, float*, int, int, int)",17,"ecc_throughput","ECC Throughput",0.000000B/s,0.000000B/s,0.000000B/s
+"GeForce GTX 950 (0)","convolutionRowsKernel(float*, float*, int, int, int)",17,"sysmem_read_utilization","System Memory Read Utilization","Idle (0)","Idle (0)","Idle (0)"
+"GeForce GTX 950 (0)","convolutionRowsKernel(float*, float*, int, int, int)",17,"sysmem_write_utilization","System Memory Write Utilization","Low (1)","Low (1)","Low (1)"
+"GeForce GTX 950 (0)","convolutionRowsKernel(float*, float*, int, int, int)",17,"eligible_warps_per_cycle","Eligible Warps Per Active Cycle",2.373846,2.443289,2.421752
+"GeForce GTX 950 (0)","convolutionRowsKernel(float*, float*, int, int, int)",17,"flop_sp_efficiency","FLOP Efficiency(Peak Single)",12.033519%,12.047455%,12.039942%
+"GeForce GTX 950 (0)","convolutionRowsKernel(float*, float*, int, int, int)",17,"flop_dp_efficiency","FLOP Efficiency(Peak Double)",0.000000%,0.000000%,0.000000%
