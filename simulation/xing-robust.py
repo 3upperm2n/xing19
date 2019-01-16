@@ -39,13 +39,117 @@ parser.add_argument('-f', dest='ofile',    default=None,     help='output file t
 args = parser.parse_args()
 
 #-----------------------------------------------------------------------------#
+# select which gpu to run 
+#-----------------------------------------------------------------------------#
+def select_gpu(gpuStat, gpuWorkq):
+    gpuNum = len(gpuStat)
+
+    node_dd = {}
+    for gid, activeJobs in enumerate(gpuStat):
+        node_dd[gid] = activeJobs
+
+    # sort dd by value  =>  (gpuID, jobs)
+    sorted_x = sorted(node_dd.items(), key=operator.itemgetter(1))
+    #print sorted_x
+
+
+    Steal = False
+    TargetDev = 0
+    workloadName = None 
+
+    for (gid, jobs) in sorted_x: # start from node with least jobs
+        qlen = len(gpuWorkq[gid])
+        if qlen == 0: # if qlen is 0 (no waiting jobs, go steal)
+            TargetDev = gid 
+            Steal = True
+        
+        if Steal:
+            if qlen > 0:
+                workloadName = gpuWorkq[gid][0] # steal work from another
+                gpuWorkq[gid].remove(workloadName) # remove the workload
+                break  # found the least loaded (none empty one)
+
+        else: # if there were jobs for the node
+            TargetDev = gid
+            workloadName = gpuWorkq[gid][0]
+            gpuWorkq[gid].remove(workloadName) # remove the workload
+            break
+
+    return TargetDev, workloadName
+
+
+
+
+
+
+    ## when there is free slot: find the least loaded one
+    #leastjob = MAXCORUN 
+    #leastjob_gpu = [] 
+    #for gid, activeJobs in enumerate(gpuStat):
+    #    if activeJobs < leastjob:
+    #        leastjob = activeJobs
+    #        leastjob_gpu.append(gid)
+
+
+    ## round robin with least loaded policy
+    #if len(leastjob_gpu) == 0: print ("Error! leastjob_gpu is empty."); sys.exit(1)
+    #targetGPU = leastjob_gpu[-1] # the last record
+
+
+    #if len(gpuWorkq[targetGPU]) > 0:
+    #    # dispatch the workload in the queue
+    #    workloadName = gpuWorkq[targetGPU][0]
+    #    gpuWorkq[targetGPU].remove(workloadName) # remove the workload
+    #    return targetGPU, workloadName
+
+    #else:
+    #    # steal work from another GPU
+    #    # check the least loaded GPU
+    #    node_dd = {}
+    #    for gid, activeJobs in enumerate(gpuStat):
+    #        node_dd[gid] = activeJobs
+
+    #    # sort dd by value  =>  (jobs, gpuID)
+    #    sorted_x = sorted(node_dd.items(), key=operator.itemgetter(1))
+    #    pos, ii = 0, 0 
+    #    for (jbs, gid) in sorted_x:
+    #        if gid == targetGPU: pos = ii; break
+    #        ii += 1
+
+    #    (_, targetGPU) = sorted_x[pos + 1] # use the next gpu
+
+    #    workloadName = gpuWorkq[targetGPU][0]
+    #    gpuWorkq[targetGPU].remove(workloadName) # remove the workload
+
+    #    return targetGPU, workloadName
+
+
+#-----------------------------------------------------------------------------#
+# Check Dispatch or Not 
+#-----------------------------------------------------------------------------#
+def has_slot(gpuStat, MAXCORUN):
+    gpuNum = len(gpuStat)
+
+    gpuFull = 0
+    for activeJobs in gpuStat: # gpuStat keeps track of active jobs
+        if activeJobs >= MAXCORUN: 
+            gpuFull += 1
+
+    if gpuFull == gpuNum: # all nodes are fully loaded 
+        Dispatch = False 
+    else:
+        Dispatch = True
+
+    return Dispatch
+
+#-----------------------------------------------------------------------------#
 # check work queue empty or not
 #-----------------------------------------------------------------------------#
 def hasworkloads(gpuWorkq):
     haswork = False
     for i in gpuWorkq:
         if len(i) > 0:
-            haswork = False
+            haswork = True 
     return haswork
 
 
@@ -67,7 +171,7 @@ def predict_appclass(app2metric, bestmodel):
 #-----------------------------------------------------------------------------#
 # Run incoming workload
 #-----------------------------------------------------------------------------#
-def run_work(jobID, AppStat, appDir):
+def run_work(jobID, AppStat, appDir, targetGPU):
 
     #
     #    jobid      gpu     status      starT       endT
@@ -75,12 +179,12 @@ def run_work(jobID, AppStat, appDir):
 
     AppStat[jobID, 0] = jobID 
     # avoid tagging gpu since we simulate with 1 gpu
-    AppStat[jobID, 2] = 0 
+    AppStat[jobID, 1] = targetGPU 
 
     # run the application 
-    [startT, endT] = run_remote(app_dir=appDir, devid=0)
+    [startT, endT] = run_remote(app_dir=appDir, devid=targetGPU)
 
-    logger.debug("jodID:{0:5d} \t start: {1:.3f}\t end: {2:.3f}\t duration: {3:.3f}".format(jobID, startT, endT, endT - startT))
+    logger.debug("jodID:{0:5d} \t gpu: {1:5d} \t start: {2:.3f}\t end: {3:.3f}\t duration: {4:.3f}".format(jobID, targetGPU, startT, endT, endT - startT))
 
 
     #=========================#
@@ -262,128 +366,97 @@ def main():
     # update work queue order
     gpuWorkq = gpuWorkq_new
 
-
     #--------------------------------------------------------------------------
     # Run
     #--------------------------------------------------------------------------
-    def select_gpu(gpuStat, gpuWorkq, MAXCORUN):
-        gpuNum = len(gpuStat)
-
-        gpuFull = 0
-        for gid, activeJobs in enumerate(gpuStat): # gpuStat keeps track of active jobs
-            if activeJobs >= MAXCORUN: 
-                gpuFull += 1
-
-        if gpuFull == gpuNum: # all nodes are fully loaded 
-            Dispatch, targetGPU, workloadName = False, None, None
-            return Dispatch, targetGPU, workloadName
-
-
-        # when there is free slot
-
-
-
+    jobID = -1
+    workers = [] # for mp processes
+    current_jobid_list = [] # keep track of current application 
 
     while hasworkloads(gpuWorkq):
-        Dispatch, targetGPU, workloadName = select_gpu(gpuStat, gpuWorkq, MAXCORUN)
+        Dispatch = has_slot(gpuStat,MAXCORUN)
+        #print Dispatch
+
+        #Dispatch, targetGPU, workloadName = select_gpu(gpuStat, gpuWorkq, MAXCORUN)
+        #print Dispatch, targetGPU, workloadName 
+        #print gpuWorkq[targetGPU]
+        #print len(gpuWorkq[0]) , len(gpuWorkq[1])
+
+        if Dispatch:
+            targetGPU, workloadName = select_gpu(gpuStat, gpuWorkq)
+            print targetGPU
+
+            gpuStat[targetGPU] += 1 # increase the active jobs on the target
+            jobID += 1
+            id2name[jobID] = workloadName 
+            current_jobid_list.append(jobID)
+
+            process = Process(target=run_work, args=(jobID, AppStat, app2dir_dd[workloadName], targetGPU))
+            process.daemon = False
+            workers.append(process)
+            process.start()
+
+        else:
+            # spinning, waiting for a free spot
+            while True:
+                break_loop = False
+
+                #current_running_jobs = 0
+                jobs2del = []
+
+                # figure out the jobs that have ended 
+                for jid in current_jobid_list:
+                    if AppStat[jid, 2] == 1: # check the status, if one is done
+                        jobs2del.append(jid)
+                        break_loop = True
+                        break
+
+                if break_loop:
+                    for id2del in jobs2del:
+                        current_jobid_list.remove(id2del) # del ended jobs 
+                        gpuInUse = int(AppStat[id2del, 1])
+                        gpuStat[gpuInUse] -= 1 # update gpu active jobs
+
+                    # break the spinning
+                    break
+
+            #------------------------------------
+            # after spinning, schedule the work
+            #------------------------------------
+            targetGPU, workloadName = select_gpu(gpuStat, gpuWorkq)
+            print targetGPU
+
+            gpuStat[targetGPU] += 1 # increase the active jobs on the target
+            jobID += 1
+            id2name[jobID] = workloadName 
+            current_jobid_list.append(jobID)
+
+            process = Process(target=run_work, args=(jobID, AppStat, app2dir_dd[workloadName], targetGPU))
+            process.daemon = False
+            workers.append(process)
+            process.start()
+
+        #break
+        #if jobID == 10: break
 
 
+    #=========================================================================#
+    # end of running all the jobs
+    #=========================================================================#
+    for p in workers:
+        p.join()
 
+    total_jobs = jobID + 1
+    if total_jobs <> apps_num:
+        logger.debug("[Warning] job number doesn't match.")
 
-    #--------------------------------------------------------------------------
-    # Run
-    #--------------------------------------------------------------------------
+    
+    # print out / save trace table 
+    if args.ofile:
+        PrintGpuJobTable(AppStat, total_jobs, id2name, saveFile=args.ofile)
+    else:
+        PrintGpuJobTable(AppStat, total_jobs, id2name)
 
-    ##appQueList = app_s1 
-    #appQueList = new_seq 
-
-    #workers = [] # for mp processes
-
-
-    ##==================================#
-    ## run the apps in the queue 
-    ##==================================#
-    #activeJobs = 0
-    #jobID = -1
-
-    #current_jobid_list = [] # keep track of current application 
-
-    #for i in xrange(apps_num):
-    #    Dispatch = True if activeJobs < MAXCORUN else False 
-    #    #print("iter {} dispatch={}".format(i, Dispatch))
-
-    #    if Dispatch:
-    #        activeJobs += 1
-    #        jobID += 1
-    #        current_jobid_list.append(jobID)
-
-    #        appName = appQueList[i] 
-    #        id2name[jobID] = appName
-    #        process = Process(target=run_work, args=(jobID, AppStat, app2dir_dd[appName]))
-
-    #        process.daemon = False
-    #        #logger.debug("Start %r", process)
-    #        workers.append(process)
-    #        process.start()
-
-    #    else:
-    #        # spin
-    #        while True:
-    #            break_loop = False
-
-    #            current_running_jobs = 0
-    #            jobs2del = []
-
-    #            for jid in current_jobid_list:
-    #                if AppStat[jid, 2] == 1: # check the status, if one is done
-    #                    jobs2del.append(jid)
-    #                    break_loop = True
-
-    #            if break_loop:
-    #                activeJobs -= 1
-
-    #                # update
-    #                if jobs2del:
-    #                    for id2del in jobs2del:
-    #                        del_idx = current_jobid_list.index(id2del)
-    #                        del current_jobid_list[del_idx]
-    #                break
-
-    #        #------------------------------------
-    #        # after spinning, schedule the work
-    #        #------------------------------------
-
-    #        #print("iter {}: activeJobs = {}".format(i, activeJobs))
-    #        activeJobs += 1
-    #        jobID += 1
-    #        current_jobid_list.append(jobID)
-    #        #print("iter {}: activeJobs = {}".format(i, activeJobs))
-
-    #        appName = appQueList[i] 
-    #        id2name[jobID] = appName
-    #        process = Process(target=run_work, args=(jobID, AppStat, app2dir_dd[appName]))
-
-    #        process.daemon = False
-    #        workers.append(process)
-    #        process.start()
-
-
-    ##=========================================================================#
-    ## end of running all the jobs
-    ##=========================================================================#
-    #for p in workers:
-    #    p.join()
-
-    #total_jobs = jobID + 1
-    #if total_jobs <> apps_num:
-    #    logger.debug("[Warning] job number doesn't match.")
-
-    #
-    ## print out / save trace table 
-    #if args.ofile:
-    #    PrintGpuJobTable(AppStat, total_jobs, id2name, saveFile=args.ofile)
-    #else:
-    #    PrintGpuJobTable(AppStat, total_jobs, id2name)
 
 
 if __name__ == "__main__":
