@@ -3,14 +3,11 @@
 import os,sys
 import operator, copy, random, time, ctypes
 import numpy as np
-import pandas as pd
 
 import multiprocessing as mp
 from multiprocessing import Process, Lock, Manager, Value, Pool
 
-import pickle
 from sklearn.externals import joblib  # to save/load model to disk
-
 
 import logging
 logging.basicConfig(level=logging.DEBUG)
@@ -21,7 +18,7 @@ sys.path.append('../prepare')
 from app_info import * 
 
 # read common api
-sys.path.append('../utils')
+sys.path.append('.')
 from magic_common import * 
 
 lock = Lock()
@@ -32,82 +29,10 @@ manager = Manager()
 #-----------------------------------------------------------------------------#
 import argparse
 parser = argparse.ArgumentParser(description='')
-parser.add_argument('-g', dest='gpuNum',   default=2,        help='GPUs on current system')
-parser.add_argument('-c', dest='maxCoRun', default=2,        help='max collocated jobs per gpu')
+parser.add_argument('-c', dest='maxCoRun', default=1,        help='max collocated jobs per gpu')
 parser.add_argument('-s', dest='seed',     default=31415926, help='random seed for shuffling the app order')
 parser.add_argument('-f', dest='ofile',    default=None,     help='output file to save the app timing trace')
 args = parser.parse_args()
-
-#-----------------------------------------------------------------------------#
-# select which gpu to run 
-#-----------------------------------------------------------------------------#
-#def select_gpu(gpuStat, gpuWorkq):
-#    gpuNum = len(gpuStat)
-#
-#    node_dd = {}
-#    for gid, activeJobs in enumerate(gpuStat):
-#        node_dd[gid] = activeJobs
-#
-#    # sort dd by value  =>  (gpuID, jobs)
-#    sorted_x = sorted(node_dd.items(), key=operator.itemgetter(1))
-#    #print sorted_x
-#
-#
-#    Steal = False
-#    TargetDev = 0
-#    workloadName = None 
-#
-#    for (gid, jobs) in sorted_x: # start from node with least jobs
-#        qlen = len(gpuWorkq[gid])
-#        if qlen == 0: # if qlen is 0 (no waiting jobs, go steal)
-#            TargetDev = gid 
-#            Steal = True
-#        
-#        if Steal:
-#            if qlen > 0:
-#                workloadName = gpuWorkq[gid][0] # steal work from another
-#                gpuWorkq[gid].remove(workloadName) # remove the workload
-#                break  # found the least loaded (none empty one)
-#
-#        else: # if there were jobs for the node
-#            TargetDev = gid
-#            workloadName = gpuWorkq[gid][0]
-#            gpuWorkq[gid].remove(workloadName) # remove the workload
-#            break
-#
-#    return TargetDev, workloadName
-
-
-#-----------------------------------------------------------------------------#
-# Check Dispatch or Not 
-#-----------------------------------------------------------------------------#
-def has_slot(gpuStat, MAXCORUN):
-    gpuNum = len(gpuStat)
-
-    gpuFull = 0
-    for activeJobs in gpuStat: # gpuStat keeps track of active jobs
-        if activeJobs >= MAXCORUN: 
-            gpuFull += 1
-
-    #print("gpuStat: {}, {}".format(gpuStat[0], gpuStat[1]))
-    #print("gpuFull={}".format(gpuFull))
-
-    if gpuFull == gpuNum: # all nodes are fully loaded 
-        Dispatch = False 
-    else:
-        Dispatch = True
-
-    return Dispatch
-
-#-----------------------------------------------------------------------------#
-# check work queue empty or not
-#-----------------------------------------------------------------------------#
-def hasworkloads(gpuWorkq):
-    haswork = False
-    if len(gpuWorkq) > 0:
-        haswork = True 
-    return haswork
-
 
 #-----------------------------------------------------------------------------#
 #
@@ -127,7 +52,7 @@ def predict_appclass(app2metric, bestmodel):
 #-----------------------------------------------------------------------------#
 # Run incoming workload
 #-----------------------------------------------------------------------------#
-def run_work(jobID, AppStat, appDir, targetGPU):
+def run_work(jobID, AppStat, appDir):
 
     #
     #    jobid      gpu     status      starT       endT
@@ -135,12 +60,12 @@ def run_work(jobID, AppStat, appDir, targetGPU):
 
     AppStat[jobID, 0] = jobID 
     # avoid tagging gpu since we simulate with 1 gpu
-    AppStat[jobID, 1] = targetGPU 
+    AppStat[jobID, 2] = 0 
 
     # run the application 
-    [startT, endT] = run_remote(app_dir=appDir, devid=targetGPU)
+    [startT, endT] = run_remote(app_dir=appDir, devid=0)
 
-    logger.debug("jodID:{0:5d} \t gpu: {1:5d} \t start: {2:.3f}\t end: {3:.3f}\t duration: {4:.3f}".format(jobID, targetGPU, startT, endT, endT - startT))
+    logger.debug("jodID:{0:5d} \t start: {1:.3f}\t end: {2:.3f}\t duration: {3:.3f}".format(jobID, startT, endT, endT - startT))
 
 
     #=========================#
@@ -162,10 +87,9 @@ def main():
 
     MAXCORUN = int(args.maxCoRun)    # max jobs per gpu
     RANDSEED = int(args.seed)
-    gpuNum   = int(args.gpuNum) 
+    gpuNum = 1
 
-    logger.debug("GPUs(-g)={}\tMaxCoRun(-c)={}\trandseed(-s)={}\tsaveFile(-f)={}".format(
-        gpuNum, MAXCORUN, RANDSEED, args.ofile))
+    logger.debug("MaxCoRun={}\trandseed={}\tsaveFile={}".format(MAXCORUN, RANDSEED, args.ofile))
 
     #----------------------------------------------------------------------
     # 1) application status table : 5 columns
@@ -198,7 +122,6 @@ def main():
     #GpuStat = manager.dict()
     #for i in xrange(gpuNum):
     #    GpuStat[i] = 0
-    gpuStat = [0 for i in xrange(gpuNum)]
 
 
     #--------------------------------------------------------------------------
@@ -208,99 +131,176 @@ def main():
         print "Error: app number wrong, check ../prepare/app_info.py!"
         sys.exit(1)
 
-    #
-    # randomize the input sequences
-    #
-    app_s1 = genRandSeq(app, seed=RANDSEED)
+    # three random sequences
+    app_s1 = genRandSeq(app, seed=RANDSEED) # pi
 
     apps_num = len(app)
-    logger.debug("Total GPU Workloads = {}.".format(apps_num))
+    logger.debug("Total GPU Applications = {}.".format(apps_num))
+
+    #--------------------------------------------------------------------------
+    # 3) load  [1] app2metric and [2] bestmodel for the selected feature set  
+    #--------------------------------------------------------------------------
+    #app2metric = np.load('../prepare/app2metric_featAll.npy').item()  # featAll
+    #bestmodel = joblib.load('../01_classification/featall_bestmodel.pkl') # load model, predict app class 
+
+    #app2metric = np.load('../prepare/app2metric_feat9.npy').item()     # feat9
+    #bestmodel = joblib.load('../01_classification/feat9_bestmodel.pkl') # load model, predict app class 
+
+    #app2metric = np.load('../prepare/app2metric_feat12.npy').item()     # feat12
+    #bestmodel = joblib.load('../01_classification/feat12_bestmodel.pkl') # load model, predict app class 
+
+    #app2metric = np.load('../prepare/app2metric_feat14.npy').item()     # feat14
+    #bestmodel = joblib.load('../01_classification/feat14_bestmodel.pkl') # load model, predict app class 
+
+    #app2metric = np.load('../prepare/app2metric_feat18.npy').item()     # feat18
+    #bestmodel = joblib.load('../01_classification/feat18_bestmodel.pkl') # load model, predict app class 
+
+    #app2metric = np.load('../prepare/app2metric_feat26.npy').item()     # feat26
+    #bestmodel = joblib.load('../01_classification/feat26_bestmodel.pkl') # load model, predict app class 
+
+    #app2metric = np.load('../prepare/app2metric_feat42.npy').item()     # feat42
+    #bestmodel = joblib.load('../01_classification/feat42_bestmodel.pkl') # load model, predict app class 
+
+    #app2metric = np.load('../prepare/app2metric_feat64.npy').item()     # feat64
+    #bestmodel = joblib.load('../01_classification/feat64_bestmodel.pkl') # load model, predict app class 
+
+    app2metric = np.load('../prepare/app2metric_featMystic.npy').item()     # featMystic
+    bestmodel = joblib.load('../01_classification/featMystic_bestmodel.pkl') # load model, predict app class 
+
+    app2class_dd = predict_appclass(app2metric, bestmodel) 
+
+
 
 
     #--------------------------------------------------------------------------
-    # fcfs: only one workqueue
+    # according to the input app sequence, arrange them by putting robust
+    # app in front of the sensitive app
     #--------------------------------------------------------------------------
-    gpuWorkq = copy.deepcopy(app_s1)
-    #gpuWorkq.remove('cudasdk_dct8x8')
-    #print gpuWorkq
-    #print app_s1
+    robust_list, sensitive_list = [],  []
+    for i in app_s1:
+        if app2class_dd[i] == 1:
+            robust_list.append(i)
+        else:
+            sensitive_list.append(i)
+
+    print robust_list
+    print len(robust_list)
+
+    #---------
+    # read the bin size
+    #---------
+    app_binsize_dd = np.load('../01_classification/app_binsize_dd.npy').item()
+
+    # for k,v in app_binsize_dd.iteritems(): print k, v
+    robust_bin_dd = {}
+    for ap in robust_list:
+         robust_bin_dd[ap] = app_binsize_dd[ap]
+
+    sensitive_bin_dd = {}
+    for ap in sensitive_list:
+         sensitive_bin_dd[ap] = app_binsize_dd[ap]
+
+
+    robust_bin_sorted = sorted(robust_bin_dd.items(), key=operator.itemgetter(1), reverse=True)
+    sensitive_bin_sorted = sorted(sensitive_bin_dd.items(), key=operator.itemgetter(1), reverse=True) # big to small
+
+
+    new_seq = []
+    for (ap, _) in robust_bin_sorted: # add robust first
+        new_seq.append(ap)
+    for (ap, _) in sensitive_bin_sorted: # add sensitive 
+        new_seq.append(ap)
+
+    #print new_seq
+
+
+    #return
+
+    #print sensitive_list
+    #print len(sensitive_list)
+
+    #new_seq = copy.deepcopy(robust_list)
+    #new_seq.extend(sensitive_list)
+
+    #print new_seq
+
+
 
     #--------------------------------------------------------------------------
-    # Run
+    #
     #--------------------------------------------------------------------------
-    jobID = -1
+    #appQueList = app_s1 
+    appQueList = new_seq 
+
     workers = [] # for mp processes
-    current_jobid_list = [] # keep track of current application 
-    gpu_ptr = 0
 
-    while hasworkloads(gpuWorkq):
-        Dispatch = has_slot(gpuStat,MAXCORUN)
+
+    #==================================#
+    # run the apps in the queue 
+    #==================================#
+    activeJobs = 0
+    jobID = -1
+
+    current_jobid_list = [] # keep track of current application 
+
+    for i in xrange(apps_num):
+        Dispatch = True if activeJobs < MAXCORUN else False 
+        #print("iter {} dispatch={}".format(i, Dispatch))
 
         if Dispatch:
-            #
-            targetGPU = gpu_ptr % gpuNum
-            gpu_ptr += 1
-            if gpu_ptr == gpuNum: gpu_ptr = 0
-
-            workloadName = gpuWorkq[0]
-            gpuWorkq.remove(workloadName)
-
-            gpuStat[targetGPU] += 1 # increase the active jobs on the target
+            activeJobs += 1
             jobID += 1
-            id2name[jobID] = workloadName 
             current_jobid_list.append(jobID)
 
-            process = Process(target=run_work, args=(jobID, AppStat, app2dir_dd[workloadName], targetGPU))
+            appName = appQueList[i] 
+            id2name[jobID] = appName
+            process = Process(target=run_work, args=(jobID, AppStat, app2dir_dd[appName]))
+
             process.daemon = False
+            #logger.debug("Start %r", process)
             workers.append(process)
             process.start()
 
         else:
-            # spinning, waiting for a free spot
+            # spin
             while True:
                 break_loop = False
 
-                #current_running_jobs = 0
+                current_running_jobs = 0
                 jobs2del = []
 
-                # figure out the jobs that have ended 
                 for jid in current_jobid_list:
                     if AppStat[jid, 2] == 1: # check the status, if one is done
                         jobs2del.append(jid)
                         break_loop = True
-                        break
 
                 if break_loop:
-                    for id2del in jobs2del:
-                        current_jobid_list.remove(id2del) # del ended jobs 
-                        gpuInUse = int(AppStat[id2del, 1])
-                        gpuStat[gpuInUse] -= 1 # update gpu active jobs
+                    activeJobs -= 1
 
-                    # break the spinning
+                    # update
+                    if jobs2del:
+                        for id2del in jobs2del:
+                            del_idx = current_jobid_list.index(id2del)
+                            del current_jobid_list[del_idx]
                     break
 
             #------------------------------------
             # after spinning, schedule the work
             #------------------------------------
-            targetGPU = gpu_ptr % gpuNum
-            gpu_ptr += 1
-            if gpu_ptr == gpuNum: gpu_ptr = 0
 
-            workloadName = gpuWorkq[0]
-            gpuWorkq.remove(workloadName)
-
-            gpuStat[targetGPU] += 1 # increase the active jobs on the target
+            #print("iter {}: activeJobs = {}".format(i, activeJobs))
+            activeJobs += 1
             jobID += 1
-            id2name[jobID] = workloadName 
             current_jobid_list.append(jobID)
+            #print("iter {}: activeJobs = {}".format(i, activeJobs))
 
-            process = Process(target=run_work, args=(jobID, AppStat, app2dir_dd[workloadName], targetGPU))
+            appName = appQueList[i] 
+            id2name[jobID] = appName
+            process = Process(target=run_work, args=(jobID, AppStat, app2dir_dd[appName]))
+
             process.daemon = False
             workers.append(process)
             process.start()
-
-        #break
-        #if jobID == 10: break
 
 
     #=========================================================================#
@@ -319,7 +319,6 @@ def main():
         PrintGpuJobTable(AppStat, total_jobs, id2name, saveFile=args.ofile)
     else:
         PrintGpuJobTable(AppStat, total_jobs, id2name)
-
 
 
 if __name__ == "__main__":

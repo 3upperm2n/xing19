@@ -78,52 +78,6 @@ def select_gpu(gpuStat, gpuWorkq):
     return TargetDev, workloadName
 
 
-
-
-
-
-    ## when there is free slot: find the least loaded one
-    #leastjob = MAXCORUN 
-    #leastjob_gpu = [] 
-    #for gid, activeJobs in enumerate(gpuStat):
-    #    if activeJobs < leastjob:
-    #        leastjob = activeJobs
-    #        leastjob_gpu.append(gid)
-
-
-    ## round robin with least loaded policy
-    #if len(leastjob_gpu) == 0: print ("Error! leastjob_gpu is empty."); sys.exit(1)
-    #targetGPU = leastjob_gpu[-1] # the last record
-
-
-    #if len(gpuWorkq[targetGPU]) > 0:
-    #    # dispatch the workload in the queue
-    #    workloadName = gpuWorkq[targetGPU][0]
-    #    gpuWorkq[targetGPU].remove(workloadName) # remove the workload
-    #    return targetGPU, workloadName
-
-    #else:
-    #    # steal work from another GPU
-    #    # check the least loaded GPU
-    #    node_dd = {}
-    #    for gid, activeJobs in enumerate(gpuStat):
-    #        node_dd[gid] = activeJobs
-
-    #    # sort dd by value  =>  (jobs, gpuID)
-    #    sorted_x = sorted(node_dd.items(), key=operator.itemgetter(1))
-    #    pos, ii = 0, 0 
-    #    for (jbs, gid) in sorted_x:
-    #        if gid == targetGPU: pos = ii; break
-    #        ii += 1
-
-    #    (_, targetGPU) = sorted_x[pos + 1] # use the next gpu
-
-    #    workloadName = gpuWorkq[targetGPU][0]
-    #    gpuWorkq[targetGPU].remove(workloadName) # remove the workload
-
-    #    return targetGPU, workloadName
-
-
 #-----------------------------------------------------------------------------#
 # Check Dispatch or Not 
 #-----------------------------------------------------------------------------#
@@ -134,6 +88,9 @@ def has_slot(gpuStat, MAXCORUN):
     for activeJobs in gpuStat: # gpuStat keeps track of active jobs
         if activeJobs >= MAXCORUN: 
             gpuFull += 1
+
+    #print("gpuStat: {}, {}".format(gpuStat[0], gpuStat[1]))
+    #print("gpuFull={}".format(gpuFull))
 
     if gpuFull == gpuNum: # all nodes are fully loaded 
         Dispatch = False 
@@ -267,7 +224,7 @@ def main():
     logger.debug("Loading a Neural Net model to predict best GPU to use.")
 
     # metrics
-    df_app_metrics = pd.read_csv('../07_nn/appmetrics_with_appname.csv')
+    df_app_metrics = pd.read_csv('../07_nn/appmetrics_with_appname.csv') #  [NOTE: change the metrics if needed !!!]
     df_app_metrics = df_app_metrics.drop(df_app_metrics.columns[0], axis=1) # drop the 1st column
 
     # delete rodinia_heartwall
@@ -276,9 +233,9 @@ def main():
     df_rows = df_app_metrics.shape[0]
     logger.debug("Total profiling metrics = {}.".format(df_rows))
 
-    #--------------------------------------------------------------------------
+    #-----------------------
     # find out the mismatch
-    #--------------------------------------------------------------------------
+    #-----------------------
     count_same = 0
     count_diff = 0
     if df_rows > apps_num:
@@ -307,10 +264,10 @@ def main():
             logger.debug("Bummer! The app lists between input sequence and metrics are not equal. Please fix the error.")
             sys.exit(1)
 
-    #--------------------------------------------------------------------------
+    #--------------------
     # load trained model 
-    #--------------------------------------------------------------------------
-    nn_model = pickle.load(open('../07_nn/output_model.pkl', 'rb'))
+    #--------------------
+    nn_model = pickle.load(open('../07_nn/fastdev_NN_featAll.pkl', 'rb'))
 
     #
     # predict the best device to use  / assign to each GPU work queue
@@ -337,8 +294,8 @@ def main():
     #--------------------------------------------------------------------------
     logger.debug("Loading model to predict co-running interference.")
 
-    app2metric = np.load('../prepare/app2metric_featAll.npy').item()  # featAll
-    bestmodel = joblib.load('../00_classification_interference/featall_bestmodel.pkl') # load model, predict app class 
+    app2metric = np.load('../prepare/app2metric_feat9.npy').item()  # featAll
+    bestmodel = joblib.load('../00_classification_interference/feat9_bestmodel.pkl') # load model, predict app class 
 
     app2class_dd = predict_appclass(app2metric, bestmodel) 
 
@@ -346,7 +303,9 @@ def main():
 
     #--------------------------------------------------------------------------
     # 5) prioritize the interference-insensitive workloads
+    # 6) rearrange according to the bin size 
     #--------------------------------------------------------------------------
+    app_binsize_dd = np.load('../00_classification_interference/app_binsize_dd.npy').item()
 
     gpuWorkq_new = [ [] for i in xrange(gpuNum) ]
     for gid, que in enumerate(gpuWorkq):
@@ -360,8 +319,29 @@ def main():
             else:
                 #print("in-sensitive : {}".format(curapp))
                 robust_list.append(curapp)
-        gpuWorkq_new[gid].extend(robust_list)
-        gpuWorkq_new[gid].extend(sensitive_list)
+        
+        #
+        # sort the app order according to the bin size
+        #
+        robust_bin_dd = {}
+        for ap in robust_list:
+            robust_bin_dd[ap] = app_binsize_dd[ap]
+        robust_bin_sorted = sorted(robust_bin_dd.items(), key=operator.itemgetter(1), reverse=True)
+        robust_sorted = [ap for (ap, _) in robust_bin_sorted]
+
+
+        sensitive_bin_dd = {}
+        for ap in sensitive_list:
+            sensitive_bin_dd[ap] = app_binsize_dd[ap]
+        sensitive_bin_sorted = sorted(sensitive_bin_dd.items(), key=operator.itemgetter(1), reverse=True)
+        sensitive_sorted = [ap for (ap, _) in sensitive_bin_sorted]
+    
+        #gpuWorkq_new[gid].extend(robust_list)
+        #gpuWorkq_new[gid].extend(sensitive_list)
+
+        gpuWorkq_new[gid].extend(robust_sorted)  # robust first
+        gpuWorkq_new[gid].extend(sensitive_sorted)
+
 
     # update work queue order
     gpuWorkq = gpuWorkq_new
@@ -384,7 +364,7 @@ def main():
 
         if Dispatch:
             targetGPU, workloadName = select_gpu(gpuStat, gpuWorkq)
-            print targetGPU
+            #print targetGPU
 
             gpuStat[targetGPU] += 1 # increase the active jobs on the target
             jobID += 1
@@ -424,7 +404,7 @@ def main():
             # after spinning, schedule the work
             #------------------------------------
             targetGPU, workloadName = select_gpu(gpuStat, gpuWorkq)
-            print targetGPU
+            #print targetGPU
 
             gpuStat[targetGPU] += 1 # increase the active jobs on the target
             jobID += 1
