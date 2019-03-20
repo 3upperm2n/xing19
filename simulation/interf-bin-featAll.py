@@ -64,17 +64,38 @@ args = parser.parse_args()
 #            gpuWorkq_insensitive.remove(workloadName)
 #            return TargetDev, workloadName
 
-def select_gpu(gpuStat, gpuWorkq):
-    gpuNum = len(gpuStat)
+#-----------------------------------------------------------------------------#
+# 
+#-----------------------------------------------------------------------------#
+#def select_gpu(gpuStat, gpuWorkq):
+#    gpuNum = len(gpuStat)
+#
+#    node_dd = {}
+#    for gid, activeJobs in enumerate(gpuStat):
+#        node_dd[gid] = activeJobs
+#
+#    # sort dd by value  =>  (gpuID, jobs)
+#    sorted_x = sorted(node_dd.items(), key=operator.itemgetter(1))
+#
+#    (TargetDev, _) = sorted_x[0] # least loaded device to use
+#
+#    workloadName = None 
+#    if len(gpuWorkq) > 0:
+#        workloadName = gpuWorkq[0] 
+#        gpuWorkq.remove(workloadName)
+#        return TargetDev, workloadName
+#    else:
+#        return None, None
 
-    node_dd = {}
+#-----------------------------------------------------------------------------#
+# 
+#-----------------------------------------------------------------------------#
+def select_gpu(gpuStat, gpuWorkq, MAXCORUN):
+    TargetDev = 0
     for gid, activeJobs in enumerate(gpuStat):
-        node_dd[gid] = activeJobs
-
-    # sort dd by value  =>  (gpuID, jobs)
-    sorted_x = sorted(node_dd.items(), key=operator.itemgetter(1))
-
-    (TargetDev, _) = sorted_x[0] # least loaded device to use
+        TargetDev = gid
+        if activeJobs < MAXCORUN:
+            break
 
     workloadName = None 
     if len(gpuWorkq) > 0:
@@ -297,7 +318,8 @@ def main():
 
         if Dispatch:
             #targetGPU, workloadName = select_gpu(gpuStat, gpuWorkq_robust, gpuWorkq_insensitive)
-            targetGPU, workloadName = select_gpu(gpuStat, gpuWorkq)
+            #targetGPU, workloadName = select_gpu(gpuStat, gpuWorkq)
+            targetGPU, workloadName = select_gpu(gpuStat, gpuWorkq, MAXCORUN)
             #print targetGPU
 
             gpuStat[targetGPU] += 1 # increase the active jobs on the target
@@ -338,7 +360,8 @@ def main():
             # after spinning, schedule the work
             #------------------------------------
             #targetGPU, workloadName = select_gpu(gpuStat, gpuWorkq_robust, gpuWorkq_insensitive)
-            targetGPU, workloadName = select_gpu(gpuStat, gpuWorkq)
+            #targetGPU, workloadName = select_gpu(gpuStat, gpuWorkq)
+            targetGPU, workloadName = select_gpu(gpuStat, gpuWorkq, MAXCORUN)
             #print targetGPU
 
             gpuStat[targetGPU] += 1 # increase the active jobs on the target
